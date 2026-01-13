@@ -1,0 +1,16 @@
+{
+    "gs_panel": {
+                    "headerText" : "UI5 패널",
+                    "width"      : "300px",
+                    "height"     : "400px"
+                },
+    "gs_input": {
+                    "value1" : "Production Plan",
+                    "desc1"  : "PP 모듈",
+                    "width" : "200px",
+                    "value2" : "Controlling",
+                    "desc2"  : "CO 모듈",
+                    "value3" : "Human Resource",
+                    "desc3"  : "HR 모듈"
+                }
+}

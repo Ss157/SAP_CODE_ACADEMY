@@ -1,0 +1,13 @@
+<mvc:View controllerName="code1.cl5.edu07.code1cl5edu07.controller.Edu07View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <Button text="{/gs_button/text}" width="{/gs_button/width}" enabled="{/gs_button/enabled}"/>
+
+        <Panel headerText="{cl5>/gs_panel/headerText}" width="{cl5>/gs_panel/width}" height="{cl5>/gs_panel/height}" >
+            <Input value="{cl5>/gs_input/value1}" description="{cl5>/gs_input/desc1}" width="{cl5>/gs_input/width}" />
+            <Input value="{cl5>/gs_input/value2}" description="{cl5>/gs_input/desc2}" width="{cl5>/gs_input/width}" />
+            <Input value="{cl5>/gs_input/value3}" description="{cl5>/gs_input/desc3}" width="{cl5>/gs_input/width}" />
+        </Panel>
+    </Page>
+</mvc:View>
