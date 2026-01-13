@@ -1,0 +1,212 @@
+<mvc:View controllerName="code1.cl5.edu.test02.code1cl5edutest02.controller.Test01View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:t="sap.ui.table"
+	xmlns:u="sap.ui.unified"
+	xmlns:c="sap.ui.core"
+    xmlns:m="sap.suite.ui.microchart"
+    xmlns:viz="sap.viz.ui5.controls" 
+    xmlns:layout="sap.ui.layout"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <VBox>
+            <!-- 문제 11 input에서 입력받은 단을 skip하고 2에서 9단까지 출력
+            해당 문제에서 text로 사용자에게 입력해야 할 것을 명시해주고
+            input으로 skip할 단을 받는다. -->
+            <HBox>
+                <Text text="단 입력" width="5em" />
+                <Input id="gugudan" />
+            </HBox>
+            <Button text="구구단 출력" press="onGugudan()"/>
+
+            <!-- 문제 12 짝수 구구단을 출력하는 버튼, 해당 버튼을 누르면 함수 onGugudan2가 실행됨 -->
+            <Button text="짝수 구구단 출력" press="onGugudan2()"/>
+
+            <!-- 문제 13 야구단을 출력하는 버튼, 해당 버튼을 누르면 함수 onBaseBall가 실행됨 -->
+            <Button text="야구단 출력" press="onBaseBall()"/>
+        </VBox>
+
+        <!-- 문제 14 아래 table에서의 year와 area를 검색할 수 있게 하는 SearchField -->
+        <SearchField id="yearSearch" width="10em" placeholder="year 검색" search="onSearch"/>
+        <SearchField id="areaSearch" width="10em" placeholder="area 검색" search="onSearch"/>
+        
+        <!-- TeamSet을 table 형태로 표현한 코드이다
+        각 Column에 Team, Year, Area, Win를 썼다. -->
+        <t:Table
+            id="baseBallList"
+            rows="{/TeamSet}"
+            selectionMode="MultiToggle"
+            paste="onPaste"
+            ariaLabelledBy="title">
+            <t:extension>
+                <OverflowToolbar style="Clear">
+                    <Title id="title" text="BaseBall"/>
+                </OverflowToolbar>
+            </t:extension>
+            <t:columns>
+                <t:Column width="11rem">
+                    <Label text="팀명" />
+                    <t:template>
+                        <Text text="{Team}" wrapping="false" />
+                    </t:template>
+                </t:Column>
+                <t:Column width="5rem">
+                    <Label text="창단연도" />
+                    <t:template>
+                        <Text text="{Year}" wrapping="false" />
+                    </t:template>
+                </t:Column>
+                <t:Column width="5rem">
+                    <Label text="연고지" />
+                    <t:template>
+                        <Text text="{Area}" wrapping="false" />
+                    </t:template>
+                </t:Column>
+                <t:Column width="5rem">
+                    <Label text="우승횟수" />
+                    <t:template>
+                        <Text text="{Win}" wrapping="false" />
+                    </t:template>
+                </t:Column>
+            </t:columns>
+        </t:Table>
+
+        <!-- 연도별 가구수와 출생아수를 각각 barchart와 donutchart를 이용하여 
+        시각적으로 표현한다. 또, HBox를 사용하여 두 차트를 가로로 배열하였다.
+        setModel했을 때, 별칭을 house로 주었기 때문에 따로 house>를 붙여야한다. -->
+        <HBox width="30em" height="30em">
+            <m:InteractiveBarChart displayedBars="10" bars="{house>/popul}">
+                <m:bars>
+                    <m:InteractiveBarChartBar label="{house>Year}" value="{house>home}"/>
+                </m:bars>
+            </m:InteractiveBarChart>
+
+            <m:InteractiveDonutChart displayedSegments="10" segments="{house>/born}" >
+				<m:segments>
+					<m:InteractiveDonutChartSegment label="{house>Year}" value="{=parseInt(${house>Birth})}"/>
+				</m:segments>
+			</m:InteractiveDonutChart>
+        </HBox>
+
+        <!-- VizFrame 중 pie를 이용하여 GridSet을 표현한다. 
+        그러기 위해서 vizType을 pie로 설정하고 두 개의 차원과 1개의 값으로 설정한다.
+        setModel할 때 별칭을 company로 정했기 때문에 company>를 붙여서 사용한다.
+        또, 제목을 표시하지 않기 위해서 vizProperties에 title에 visible을 false로 설정한다.
+        또, plotArea를 glossy하게 하기 위해서 vizProperties에 plotArea에 drawingEffect를 glossy로 설정한다.-->
+        <viz:VizFrame id="idVizFrame" uiConfig="{applicationSet:'fiori'}"
+            height='40%' width="40%" vizType='pie'
+            vizProperties="{
+            title: { 
+                    visible: false
+                   },
+            plotArea: { 
+                        drawingEffect: 'glossy'
+                      }
+            }">
+            <viz:dataset>
+                <viz.data:FlattenedDataset data="{company>/GridSet}">
+                    <viz.data:dimensions>
+                        <viz.data:DimensionDefinition name="Company code"
+                            value="{company>Bukrs}" />
+                        <viz.data:DimensionDefinition name="Fiscal year"
+                            value="{company>Gjahr}" />
+                    </viz.data:dimensions>
+                    <viz.data:measures>
+                        <viz.data:MeasureDefinition name="Asset total"
+                            value="{company>Anln1}" />
+                    </viz.data:measures>
+                </viz.data:FlattenedDataset>
+            </viz:dataset>
+
+            <viz:feeds>
+                <viz.feeds:FeedItem uid="size" type="Measure"
+                    values="Asset total" />
+                <viz.feeds:FeedItem uid="color" type="Dimension"
+                    values="Company code" />
+                <viz.feeds:FeedItem uid="color" type="Dimension"
+                    values="Fiscal year" />
+            </viz:feeds>
+        </viz:VizFrame>
+
+        <!-- VizFrame 중 column을 이용하여 GridSet을 표현한다. 
+        그러기 위해서 vizType을 column로 설정하고 두 개의 차원과 1개의 값으로 설정한다.
+        setModel할 때 별칭을 company로 정했기 때문에 company>를 붙여서 사용한다.
+        또, 제목을 표시하지 않기 위해서 vizProperties에 title에 visible을 false로 설정한다.
+        또, plotArea를 glossy하게 하기 위해서 vizProperties에 plotArea에 drawingEffect를 glossy로 설정한다.-->
+        <viz:VizFrame uiConfig="{applicationSet:'fiori'}"
+            height='40%' width="40%" vizType='column'
+            vizProperties="{
+            title: { 
+                    visible: false
+                   },
+            plotArea: { 
+                        drawingEffect: 'glossy'
+                      }
+            }">
+            <viz:dataset>
+                <viz.data:FlattenedDataset data="{company>/GridSet}">
+                    <viz.data:dimensions>
+                        <viz.data:DimensionDefinition name="Company code"
+                            value="{company>Bukrs}" />
+                        <viz.data:DimensionDefinition name="Fiscal year"
+                            value="{company>Gjahr}" />
+                    </viz.data:dimensions>
+                    <viz.data:measures>
+                        <viz.data:MeasureDefinition name="Asset total"
+                            value="{company>Anln1}" />
+                    </viz.data:measures>
+                </viz.data:FlattenedDataset>
+            </viz:dataset>
+
+            <viz:feeds>
+                <viz.feeds:FeedItem uid="valueAxis" type="Measure"
+                    values="Asset total" />
+                <viz.feeds:FeedItem uid="categoryAxis" type="Dimension"
+                    values="Company code" />
+                <viz.feeds:FeedItem uid="categoryAxis" type="Dimension"
+                    values="Fiscal year" />
+            </viz:feeds>
+        </viz:VizFrame>
+
+        <!-- VizFrame 중 line을 이용하여 GridSet을 표현한다. 
+        그러기 위해서 vizType을 line로 설정하고 두 개의 차원과 1개의 값으로 설정한다.
+        setModel할 때 별칭을 company로 정했기 때문에 company>를 붙여서 사용한다.
+        또, 제목을 표시하지 않기 위해서 vizProperties에 title에 visible을 false로 설정한다.
+        또, plotArea를 glossy하게 하기 위해서 vizProperties에 plotArea에 drawingEffect를 glossy로 설정한다.-->
+        <viz:VizFrame uiConfig="{applicationSet:'fiori'}"
+            height='40%' width="40%" vizType='line'
+            vizProperties="{
+            title: { 
+                    visible: false
+                   },
+            plotArea: { 
+                        drawingEffect: 'glossy'
+                      }
+            }">
+            <viz:dataset>
+                <viz.data:FlattenedDataset data="{company>/GridSet}">
+                    <viz.data:dimensions>
+                        <viz.data:DimensionDefinition name="Company code"
+                            value="{company>Bukrs}" />
+                        <viz.data:DimensionDefinition name="Fiscal year"
+                            value="{company>Gjahr}" />
+                    </viz.data:dimensions>
+                    <viz.data:measures>
+                        <viz.data:MeasureDefinition name="Asset total"
+                            value="{company>Anln1}" />
+                    </viz.data:measures>
+                </viz.data:FlattenedDataset>
+            </viz:dataset>
+
+            <viz:feeds>
+                <viz.feeds:FeedItem uid="valueAxis" type="Measure"
+                    values="Asset total" />
+                <viz.feeds:FeedItem uid="categoryAxis" type="Dimension"
+                    values="Company code" />
+                <viz.feeds:FeedItem uid="categoryAxis" type="Dimension"
+                    values="Fiscal year" />
+            </viz:feeds>
+        </viz:VizFrame>
+    </Page>
+</mvc:View>
