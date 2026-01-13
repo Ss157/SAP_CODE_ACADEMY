@@ -1,0 +1,87 @@
+<mvc:View controllerName="code1.cl5.edu02.code1cl5edu02.controller.Edu02View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <VBox>
+            <Text text="SAP Code1 Class 5" />
+            <Text text="Class 5 임선희" />
+            <Label text="구로디지털단지 2번출구"/>
+            <Label text="걸어서 10분거리" design="Bold" />
+
+            <HBox>
+                <Label text="ID" width="3em" />
+                <Input id="ID" width="5em" />
+            </HBox>
+
+            <HBox>
+                <Label text="Name" width="3em" />
+                <Input id="Name" width="5em" />
+            </HBox>
+
+            <HBox>
+                <Label text="Age" width="3em" />
+                <Input id="Age" width="5em" type="Number" maxLength='2'/>
+            </HBox>
+
+            <Input id="Address" width="10em" placeholder="Address" showClearIcon="true" />
+            <Input id="Hobby" width="23em" placeholder="Hobby" description="Please write only one hobby" />
+
+            <Input id="number1" width="10em" placeholder="1st Number" showClearIcon="true" />
+            <Input id="number2" width="10em" placeholder="2nd Number" showClearIcon="true" />
+            <Input id="result" width="10em" placeholder="Result" showClearIcon="true"/>
+            <Button text="Calc" press="calc_val1()"/>
+
+            <Input id="length" width="10em" placeholder="밑변" showClearIcon="true"/>
+            <Input id="height" width="10em" placeholder="높이" showClearIcon="true"/>
+            <Input id="size" width="10em" placeholder="삼각형 넓이" showClearIcon="true"/>
+            <Button text="계산" press="calc_val2()"/>
+
+            <HBox>
+                <Text text="물건값"/>
+                <Input id="cost1" width="10em"/>
+            </HBox>
+
+            <HBox>
+                <Text text="할인율"/>
+                <Input id="discountper1" width="20em" description="20이면 20% 할인이란 뜻"/>
+            </HBox>
+
+            <HBox>
+                <Text text="할인된 값"/>
+                <Input id="after_discount_cost1" width="10em" />
+            </HBox>
+
+            <Button text="할인계산" press="calc_val3()"/>
+
+
+
+            <HBox>
+                <Text text="물건값"/>
+                <Input id="cost2" width="10em"/>
+            </HBox>
+
+            <HBox>
+                <Text text="지불한 값"/>
+                <Input id="paied_cost2" width="10em" />
+            </HBox>
+
+            <HBox>
+                <Text text="할인율"/>
+                <Input id="discountper2" width="10em"/>
+            </HBox>
+
+            <Button text="할인율계산" press="calc_val4()"/>
+
+            <Text id="today_friday" text="오늘은 금요일" width="20em"/>
+            <HBox >
+                <Button text="Begin" press="align_begin()"/>
+                <Button text="Center" press="align_center()"/>
+                <Button text="Right" press="align_right()"/>
+            </HBox>
+
+            <Label id="output" text="내일부터 주말" width="20em"/>
+            <Input id="string" placeholder="바꿀 문자열" width="20em"/>
+            <Button text="문자열 바꾸기" press="change_string()"/>
+        </VBox>
+    </Page>
+</mvc:View>
