@@ -1,0 +1,40 @@
+<mvc:View controllerName="code1.cl5.edu08.code1cl5edu08.controller.Edu08View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <VBox >
+            <Button text="항공정보" press="onAirCheck()"/>
+            <HBox >
+                <Label text="Walking Count" width="10em" />
+                <Input id="walk" width="10em" />
+            </HBox>
+            <Button text="Walking 체크" press="onCheckWalking()" />
+
+            <HBox >
+                <Label text="이름" width="10em" />
+                <Input id="name" width="10em" />
+            </HBox>
+            <HBox >
+                <Label text="반" width="10em" />
+                <Input id="class" width="10em" />
+            </HBox>
+            <HBox >
+                <Label text="번호" width="10em" />
+                <Input id="number" width="10em" />
+            </HBox>
+            <Button text="내역 체크" press="onCheckClass()" />
+
+            <HBox >
+                <Label text="User ID" width="10em" />
+                <Input id="id" width="10em" />
+            </HBox>
+            <HBox >
+                <Label text="Pw" width="10em" />
+                <Input id="password" width="10em" type="Password" />
+            </HBox>
+            <Button text="로그인" press="onLogIn()" />
+        </VBox>
+
+
+    </Page>
+</mvc:View>
