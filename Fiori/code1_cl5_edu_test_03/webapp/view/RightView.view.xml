@@ -1,0 +1,21 @@
+<mvc:View controllerName="code1.cl5.edu.test03.code1cl5edutest03.controller.RightView"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:m="sap.suite.ui.microchart"
+    xmlns:layout="sap.ui.layout"
+    xmlns="sap.m">
+    <Page id="Rightpage" title="{i18n>title}">
+        <!-- 왼쪽 뷰와 메인 뷰로 넘어가기 위한 버튼 2개를 생성한다. -->
+        <Button text="Main으로 이동" press="onMoveMain" />
+        <Button text="Base ball" press="onMoveLeft" />
+
+        <!-- 컨트롤러에서 만든 json model을 이용하여 linechart 형태로 화면에 출력한다.
+        레코드가 많아서 displayedPoints인자를 사용해준다 -->
+        <VBox width="50em" height="30em">
+            <m:InteractiveLineChart displayedPoints="10" points="{/gt_data}">
+                <m:points>
+                    <m:InteractiveLineChartPoint value="{Val}" label="{Label}"/>
+                </m:points>
+            </m:InteractiveLineChart>
+        </VBox>
+    </Page>
+</mvc:View>

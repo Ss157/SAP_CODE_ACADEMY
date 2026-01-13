@@ -1,0 +1,9 @@
+<mvc:View controllerName="code1.cl5.edu.test03.code1cl5edutest03.controller.Test03View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <!-- 왼쪽 뷰와 오른쪽 뷰로 넘어가기 위한 버튼 2개를 생성한다. -->
+        <Button text="Base ball" press="onMoveLeft" />
+        <Button text="Home Count" press="onMoveRight" />
+    </Page>
+</mvc:View>

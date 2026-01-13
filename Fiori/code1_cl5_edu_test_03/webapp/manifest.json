@@ -1,0 +1,118 @@
+{
+  "_version": "1.60.0",
+  "sap.app": {
+    "id": "code1.cl5.edu.test03.code1cl5edutest03",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.19.1",
+      "toolsId": "2b1f053f-a2f3-4089-b362-e1a48a0a0f70"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.120.39",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "code1.cl5.edu.test03.code1cl5edutest03.i18n.i18n"
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "code1.cl5.edu.test03.code1cl5edutest03.view",
+        "async": true,
+        "viewPath": "code1.cl5.edu.test03.code1cl5edutest03.view"
+      },
+      "routes": [
+        {
+          "name": "RouteTest03View",
+          "pattern": ":?query:",
+          "target": [
+            "TargetTest03View"
+          ]
+        },
+        {
+          "name": "RouteLeftView",
+          "pattern": "LeftPattern",
+          "target": [
+            "TargetLeftView"
+          ]
+        },
+        {
+          "name": "RouteRightView",
+          "pattern": "RightPattern",
+          "target": [
+            "TargetRightView"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetTest03View": {
+          "id": "Test03View",
+          "name": "Test03View"
+        },
+        "TargetLeftView": {
+          "name": "LeftView"
+        },
+        "TargetRightView": {
+          "name": "RightView"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "code1.cl5.edu.test03.code1cl5edutest03.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}
