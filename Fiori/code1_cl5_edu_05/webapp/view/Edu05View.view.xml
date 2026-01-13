@@ -1,0 +1,29 @@
+<mvc:View controllerName="code1.cl5.edu05.code1cl5edu05.controller.Edu05View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <Button text="{/text}" icon="{/icon}" />
+        <Input placeholder="{/place}" description="{/desc}" width="20em"/>
+        <VBox>
+            <Button text="{/buttonSet/text1}" width="{/buttonSet/width1}" icon="{/buttonSet/icon1}" />
+            <Button text="{/buttonSet/text2}" width="{/buttonSet/width2}" enabled="{/buttonSet/enabled}"/>
+            
+            <Input value="{/inputSet/valueI1}" description="{/inputSet/descI1}" maxLength="{/inputSet/maxlen1}" 
+                   width="{/inputSet/width}" showClearIcon="{/inputSet/sci1}" />
+            <Input description="{/inputSet/desc2}" width="{/inputSet/width}" maxLength="{/inputSet/maxlen2}"/>
+        </VBox>
+
+        <VBox >
+            <Label text="{/labelSet/text}"  design="{/labelSet/design}" width="{/labelSet/width}" />
+            <Text text="{/textSet/text}" width="{/textSet/width}" textAlign="{/textSet/textAlign}" />
+            <Button text="{/buttonSet/text3}" icon="{/buttonSet/icon2}"/>
+        </VBox>
+
+        <VBox >
+            <Label text="{/LabelSet/text}" design="{/LabelSet/design}" width="{/LabelSet/width}"/>
+            <Text text="{/TextSet/text}" width="{/TextSet/width}"  textAlign="{/TextSet/align}" />
+            <Button text="{/ButtonSet/text}" icon="{/ButtonSet/icon}" />
+        </VBox>
+
+    </Page>
+</mvc:View>
