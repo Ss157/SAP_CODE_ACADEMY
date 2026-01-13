@@ -1,0 +1,98 @@
+{
+  "_version": "1.76.0",
+  "sap.app": {
+    "id": "code1.cl5.microchart01hw.code1cl5microchart01hw",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.19.1",
+      "toolsId": "fd8f227d-62b1-44ac-9660-3a01210c7ac0"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.142.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "code1.cl5.microchart01hw.code1cl5microchart01hw.i18n.i18n"
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "code1.cl5.microchart01hw.code1cl5microchart01hw.view",
+        "async": true,
+        "viewPath": "code1.cl5.microchart01hw.code1cl5microchart01hw.view"
+      },
+      "routes": [
+        {
+          "name": "RouteEdu11View",
+          "pattern": ":?query:",
+          "target": [
+            "TargetEdu11View"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetEdu11View": {
+          "id": "Edu11View",
+          "name": "Edu11View"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "code1.cl5.microchart01hw.code1cl5microchart01hw.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

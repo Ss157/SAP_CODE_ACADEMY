@@ -1,0 +1,20 @@
+<mvc:View controllerName="code1.cl5.microchart01hw.code1cl5microchart01hw.controller.Edu11View"
+    xmlns:mvc="sap.ui.core.mvc"
+	xmlns:c="sap.suite.ui.microchart"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <VBox width="30em" height="30em">
+            <c:InteractiveBarChart labelWidth="25%" selectionChanged="selectionChanged" displayedBars="6" bars="{path : '/barSet'}">
+                <c:bars>
+                    <c:InteractiveBarChartBar label="{Label}" value="{=parseFloat(${Val})}"/>
+                </c:bars>
+            </c:InteractiveBarChart>
+
+            <c:InteractiveDonutChart selectionChanged="onSelectionChanged" segments="{path: 'car>/donutSet'}">
+                <c:segments>
+                    <c:InteractiveDonutChartSegment label="{car>Label}" value="{car>Car}" />
+                </c:segments>
+            </c:InteractiveDonutChart>
+        </VBox>
+    </Page>
+</mvc:View>
