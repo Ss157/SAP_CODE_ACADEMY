@@ -1,0 +1,37 @@
+<mvc:View controllerName="code1.cl5.edu03.code1cl5edu03.controller.Edu03View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <VBox>
+            <Input id="class" width="20em" placeholder="Input Class" />
+            <Button text="IF 확인" press="ifCheck01()"/>
+
+            <Input id="number" width="10em" />
+            <Button text="Case 확인" press="caseCheck01()" />
+            
+            <Button text="IF 체크" press="ifCheck02()"/>
+
+            <HBox>
+                <Label text="City" width="5em"/>
+                <Input id="city" />
+            </HBox>
+            <Button text="switch 체크" press="caseCheck02()" />
+
+            <HBox >
+                <Label text="1st Number" />
+                <Input id="number1" />
+                <Label text="2nd Number"/>
+                <Input id="number2" />
+            </HBox>
+            <Button text="크기비교" press="compareNum()" />
+
+            <Button text="for 체크1" press="forCheck01()" />
+
+            <HBox>
+                <Text text="Number" />
+                <Input id="number3" />
+            </HBox>
+            <Button text="Match 체크" press="matchNum()" />
+        </VBox>
+    </Page>
+</mvc:View>
