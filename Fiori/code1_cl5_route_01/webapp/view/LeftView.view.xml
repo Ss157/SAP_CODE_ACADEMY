@@ -1,0 +1,9 @@
+<mvc:View controllerName="code1.cl5.route01.code1cl5route01.controller.LeftView"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="leftPage" title="{i18n>title}">
+        <Label text="여기는 Left View 입니다." design="Bold" />
+        <Button text="Right로 이동" press="onMoveRight"/>
+        <Button text="Main로 이동" press="onMoveMain"/>
+    </Page>
+</mvc:View>
