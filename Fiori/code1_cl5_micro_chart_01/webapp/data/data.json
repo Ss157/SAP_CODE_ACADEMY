@@ -1,0 +1,10 @@
+{
+    "valSet": [
+                {"Val" : "33.1", "Label" : "May"},
+                {"Val" : "12",   "Label" : "June"},
+                {"Val" : "51.4", "Label" : "July"},
+                {"Val" : "52",   "Label" : "Aug"},
+                {"Val" : "69.9", "Label" : "Sep"},
+                {"Val" : "0.9",  "Label" : "Oct"}
+              ]
+}
