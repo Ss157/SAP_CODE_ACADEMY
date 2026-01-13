@@ -1,0 +1,29 @@
+<mvc:View controllerName="code1.cl5.edu01.code1cl5edu01.controller.Edu01View"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">  <!-- Page는 클래스임 대문자로 시작함  --> 
+        <VBox> <!-- /n랑 같은 의미 --> 
+            <Text text="SAP Code1 Class5 Fiori Text" width="200px" textAlign="Center" />
+            <Label text="Class 5 Fighting" width="20rem" design="Bold"  /> 
+            <Button text="Bell" width="100px" icon="sap-icon://bell-2" press="message()"/>
+
+            <Input id="input" width="20em" description="이것은 입력필드" showClearIcon="true" placeholder="ID 입력" value="SAP Code1"/>
+        <HBox >
+            <Text text="숫자1" width="3em" />
+            <Input id="number1" width="7em" showClearIcon="true" type="Number" placeholder="숫자1 입력"/>
+        </HBox>
+
+        <HBox >
+            <Text text="숫자2" width="3em" />
+            <Input id="number2" width="7em" showClearIcon="true" type="Number" placeholder="숫자2 입력"/>
+        </HBox>
+
+        <HBox >
+            <Text text="결과" width="3em" />
+            <Input id="number3" width="7em" showClearIcon="true" type="Number" placeholder="숫자2 입력"/>
+        </HBox>
+
+            <Button text="확인" icon="sap-icon://accept" width="5em" press="check_val()"/>
+        </VBox>
+    </Page>
+</mvc:View>
