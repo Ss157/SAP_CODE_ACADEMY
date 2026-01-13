@@ -1,0 +1,31 @@
+<mvc:View controllerName="code1.uxtest01.code1uxtest01.controller.TestView"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <Button text="배열 출력" press="printArray" />
+
+        <HBox >
+            <Input id="Dan01" width="5em" placeholder="단 입력" type="Number" />
+            <Button text="출력1" press="onGugudan01" />
+        </HBox>
+
+        <HBox >
+            <Input id="Dan02" width="5em" placeholder="단 입력" type="Number" />
+            <Button text="출력2" press="onGugudan02" />
+        </HBox>
+        <HBox >
+            <Button text="몽땅출력" press="totalPrint" />
+        </HBox>
+        <Input id="Operator" width="4em" placeholder="연산자" />
+        <HBox >
+            <Button text="+" press="addOperator('+')" />
+            <Button text="-" press="addOperator('-')" />
+            <Button text="*" press="addOperator('*')" />
+            <Button text="/" press="addOperator('/')" />
+            <Button text="%" press="addOperator('%')" />
+        </HBox>
+        <HBox >
+            <Button text="문자열계산" press="calcString" />
+        </HBox>
+    </Page>
+</mvc:View>
