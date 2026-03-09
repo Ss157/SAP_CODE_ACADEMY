@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_25</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_25</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.05 text table join 실습 2</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_25</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_25 MESSAGE-ID zc519m.
+
+TABLES : aufk.
+
+DATA : BEGIN OF ls_order,
+         aufnr      TYPE afko-aufnr,
+         posnr      TYPE afpo-posnr,
+         auart      TYPE aufk-auart,
+         auart_txt  TYPE t003p-txt, "auart의 내역
+         autyp      TYPE aufk-autyp,
+         gsber      TYPE aufk-gsber,
+         gtext      TYPE tgsbt-gtext, "gsber의 내역
+         gstrp      TYPE afko-gstrp,
+         gltrp      TYPE afko-gltrp,
+         plnbez     TYPE afko-plnbez,
+         plnbez_txt TYPE makt-maktx, "plnbez의 내역
+         matnr      TYPE afpo-matnr,
+         maktx      TYPE makt-maktx, "matnr의 내역
+         psmng      TYPE afpo-psmng,
+         amein      TYPE afpo-amein,
+       END OF ls_order,
+
+       lt_order LIKE TABLE OF ls_order.
+
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS so_aufnr FOR aufk-aufnr.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+CLEAR   : ls_order.
+REFRESH : lt_order.
+
+SELECT a~auart a~autyp a~gsber
+       b~aufnr b~gstrp b~gltrp b~plnbez
+       c~posnr c~matnr c~psmng c~amein
+       d~txt AS auart_txt
+       e~gtext
+       f~maktx AS plnbez_txt
+       g~maktx
+  INTO CORRESPONDING FIELDS OF TABLE lt_order
+  FROM aufk AS a
+ INNER JOIN afko AS b
+    ON a~aufnr = b~aufnr
+ INNER JOIN afpo AS c
+    ON b~aufnr = c~aufnr
+  LEFT OUTER JOIN t003p AS d
+    ON d~spras = sy-langu
+   AND a~auart = d~auart
+  LEFT OUTER JOIN tgsbt AS e
+    ON e~spras = sy-langu
+   AND a~gsber = e~gsber
+  LEFT OUTER JOIN makt AS f
+    ON f~spras = sy-langu
+   AND b~plnbez = f~matnr
+  LEFT OUTER JOIN makt AS g
+    ON g~spras  = sy-langu
+   AND c~matnr  = g~matnr
+ WHERE a~aufnr IN so_aufnr. "select option은 in 쓰기
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+cl_demo_output=&gt;display( lt_order ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Conditions</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_AUFNR D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

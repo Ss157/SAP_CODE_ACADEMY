@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_44</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_44</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.10 실습</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_44</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_44 MESSAGE-ID zc519m.
+
+TABLES : sflight.
+
+DATA : BEGIN OF gs_itab1,
+         carrid     TYPE sflight-carrid,
+         carrname   TYPE zc519v0032-carrname,
+         connid     TYPE sflight-connid,
+         fldate     TYPE sflight-fldate,
+         cityfrom   TYPE zc519v0032-cityfrom,
+         cityto     TYPE zc519v0032-cityto,
+         planetype  TYPE sflight-planetype,
+         seatsmax_b TYPE sflight-seatsmax_b,
+         url        TYPE zc519v0032-url,
+       END OF gs_itab1,
+
+       gt_itab1 LIKE TABLE OF gs_itab1,
+
+       BEGIN OF gs_itab2,
+         carrid    TYPE sflight-carrid,
+         connid    TYPE sflight-connid,
+         fldate    TYPE sflight-fldate,
+         cityfrom  TYPE zc519v0032-cityfrom,
+         cityto    TYPE zc519v0032-cityto,
+         planetype TYPE sflight-planetype,
+       END OF gs_itab2,
+
+       gt_itab2 LIKE TABLE OF gs_itab2.
+
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  PARAMETERS     : pa_carr TYPE sflight-carrid OBLIGATORY DEFAULT 'LH'.
+  SELECT-OPTIONS : so_conn FOR  sflight-connid OBLIGATORY.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+CLEAR   : gs_itab1, gs_itab2.
+REFRESH : gt_itab1, gt_itab2.
+
+SELECT a~carrid   a~connid   a~fldate a~planetype a~seatsmax_b
+       b~carrname b~cityfrom b~cityto b~url
+  INTO CORRESPONDING FIELDS OF TABLE gt_itab1
+  FROM sflight AS a
+ INNER JOIN zc519v0032 AS b
+    ON a~carrid = b~carrid
+   AND a~connid = b~connid
+ WHERE a~carrid  = pa_carr
+   AND a~connid IN so_conn.
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+cl_demo_output=&gt;display( gt_itab1 ).
+
+LOOP AT gt_itab1 INTO gs_itab1.
+
+  MOVE-CORRESPONDING gs_itab1 TO gs_itab2.
+
+  CASE gs_itab1-seatsmax_b.
+    WHEN '30'.
+      gs_itab2-planetype = '747-400'.
+
+    WHEN '21'.
+      gs_itab2-planetype = 'A340-600'.
+
+    WHEN OTHERS.
+      CLEAR gs_itab2-planetype.
+
+  ENDCASE.
+
+  APPEND gs_itab2 TO gt_itab2.
+  CLEAR : gs_itab1, gs_itab2.
+ENDLOOP.
+
+cl_demo_output=&gt;display( gt_itab2 ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Options</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_CARR D       .</font>
+<font color ="#0000FF">* SO_CONN D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

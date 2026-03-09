@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_24</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_24</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.05 text table join 실습 1</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_24</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_24 MESSAGE-ID zc519m.
+
+TABLES : ekko.
+
+DATA : BEGIN OF ls_purc,
+         ebeln TYPE ekko-ebeln,
+         ebelp TYPE ekpo-ebelp,
+         bukrs TYPE ekko-bukrs,
+         butxt TYPE t001-butxt, "bukrs의 내역
+         bstyp TYPE ekko-bstyp,
+         bsart TYPE ekko-bsart,
+         batxt TYPE t161t-batxt, "bsart의 내역
+         matnr TYPE ekpo-matnr,
+         maktx TYPE makt-maktx, "matnr의 내역
+         werks TYPE ekpo-werks,
+         name1 TYPE t001w-name1, "werks의 내역
+         menge TYPE ekpo-menge,
+         meins TYPE ekpo-meins,
+       END OF ls_purc,
+
+       lt_purc LIKE TABLE OF ls_purc.
+
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS : so_ebeln FOR ekko-ebeln.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+CLEAR   : ls_purc.
+REFRESH : lt_purc.
+
+SELECT a~ebeln a~bukrs a~bstyp a~bsart
+       b~ebelp b~matnr b~werks b~menge b~meins
+       c~butxt
+       d~name1
+       e~batxt
+       f~maktx
+  INTO CORRESPONDING FIELDS OF TABLE lt_purc
+  FROM ekko AS a
+ INNER JOIN ekpo AS b
+    ON a~ebeln = b~ebeln
+ INNER JOIN t001 AS c
+    ON a~bukrs = c~bukrs
+ INNER JOIN t001w AS d
+    ON b~werks = d~werks
+  LEFT OUTER JOIN t161t AS e
+    ON e~spras = sy-langu
+   AND a~bsart = e~bsart
+   AND a~bstyp = e~bstyp "이 부분에서 두 개 필드 조인
+                         "bstyp의 경우 t161t에서 pk이기 때문에
+                         "bstyp를 select 조건에 넣지 않는다면
+                         "중복제거를 보장하지 못한다
+  LEFT OUTER JOIN makt AS f
+    ON f~spras  = sy-langu
+   AND b~matnr  = f~matnr
+ WHERE a~ebeln IN so_ebeln. "select option에는 IN을 써야 함
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+cl_demo_output=&gt;display( lt_purc ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_EBELN D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_08</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_08</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.11.28 select</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_08</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_08 MESSAGE-ID zc519m. "Message EU 쓸꺼야
+
+<font color ="#0000FF">* SCARR의 Record들을 SELECT 해보자</font>
+DATA : ls_scarr TYPE scarr,
+       lt_sacrr LIKE TABLE OF ls_scarr,
+
+       BEGIN OF ls_sflight,
+         carrid   TYPE sflight-carrid,
+         connid   TYPE sflight-connid,
+         fldate   TYPE sflight-fldate,
+         price    TYPE sflight-price,
+         currency TYPE sflight-currency,
+       END OF ls_sflight,
+
+       lt_sflight LIKE TABLE OF ls_sflight,
+
+       BEGIN OF ls_sflight2,
+         carrid    TYPE sflight-carrid,
+         connid    TYPE sflight-connid,
+         fldate    TYPE sflight-fldate,
+         price     TYPE sflight-price,
+         currency  TYPE sflight-currency,
+         planetype TYPE sflight-planetype,
+         seatsocc  TYPE sflight-seatsocc,
+       END OF ls_sflight2,
+
+       lt_sflight2 LIKE TABLE OF ls_sflight2,
+
+       BEGIN OF ls_sbook,
+         carrid     TYPE sbook-carrid,
+         connid     TYPE sbook-connid,
+         fldate     TYPE sbook-fldate,
+         bookid     TYPE sbook-bookid,
+         customid   TYPE sbook-customid,
+         class      TYPE sbook-class,
+         luggweight TYPE sbook-luggweight,
+         wunit      TYPE sbook-wunit,
+         forcuram   TYPE sbook-forcuram,
+         forcurkey  TYPE sbook-forcurkey,
+       END OF ls_sbook,
+
+       lt_sbook LIKE TABLE OF ls_sbook,
+       lv_tabix TYPE sy-tabix.
+
+CLEAR   : ls_scarr, ls_sflight.
+REFRESH : lt_sacrr, lt_sflight.
+
+<font color ="#0000FF">* SELECT &lt;field1&gt; &lt;field2&gt; ...</font>
+<font color ="#0000FF">*   INTO TABLE : 위에서 select 하려는 필드들의 타입,길이 및 개수도</font>
+<font color ="#0000FF">*                순서까지 다 맞아야 함..</font>
+<font color ="#0000FF">*   INTO CORRESPONDING FIELDS OF TABLE :</font>
+<font color ="#0000FF">*   --&gt; 위에서 select 하려는 필드명과  ITAB  의 필드명을 비교해서</font>
+<font color ="#0000FF">*       같은 필드로 자동매칭 해줌</font>
+<font color ="#0000FF">*   FROM &lt;table&gt;</font>
+<font color ="#0000FF">* WHERE &lt;조건&gt;</font>
+
+<font color ="#0000FF">** 이 구문에서 *을 찍었기 때문에 mandt를 가장 먼저 찍게 된다.</font>
+<font color ="#0000FF">** 따라서 lt_sacrr에 mandt가 있어야 한다.</font>
+<font color ="#0000FF">*SELECT *</font>
+<font color ="#0000FF">*  INTO TABLE lt_sacrr</font>
+<font color ="#0000FF">*  FROM scarr.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*IF sy-subrc &lt;&gt; 0.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  WRITE : 'Data nor found'.</font>
+<font color ="#0000FF">*  STOP.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*ENDIF.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**cl_demo_output=&gt;display( lt_sacrr ).</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">***********************************************************************</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">** TABLE = 행 여러개 받기 위해서 써야 함</font>
+<font color ="#0000FF">*SELECT mandt carrid carrname currcode url</font>
+<font color ="#0000FF">*  INTO TABLE lt_sacrr</font>
+<font color ="#0000FF">*  FROM scarr.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">** CORRESPONDING FIELDS OF = 필드 명들의 순서와 개수가 맞지 않아도</font>
+<font color ="#0000FF">** 알아서 맞춰줌</font>
+<font color ="#0000FF">** 따라서 CORRESPONDING FIELDS OF을 적극적으로 써야 한다.</font>
+<font color ="#0000FF">*SELECT carrname carrid url currcode</font>
+<font color ="#0000FF">*  INTO CORRESPONDING FIELDS OF TABLE lt_sacrr</font>
+<font color ="#0000FF">*  FROM scarr.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">** where = 조건을 쓴다.</font>
+<font color ="#0000FF">*SELECT carrname carrid url currcode</font>
+<font color ="#0000FF">*  INTO CORRESPONDING FIELDS OF TABLE lt_sacrr</font>
+<font color ="#0000FF">*  FROM scarr</font>
+<font color ="#0000FF">* WHERE carrid   = 'LH'</font>
+<font color ="#0000FF">*   AND currcode = 'EUR'.</font>
+
+<font color ="#0000FF">**********************************************************************</font>
+
+SELECT carrid connid fldate price currency
+  INTO CORRESPONDING FIELDS OF TABLE lt_sflight
+  FROM sflight.
+
+<font color ="#0000FF">* select가 잘 되었는지 확인하는 코드</font>
+IF sy-subrc &lt;&gt; 0.
+
+  WRITE : 'Data not found'.
+  STOP.
+
+ENDIF.
+
+LOOP AT lt_sflight INTO ls_sflight.
+
+  lv_tabix = sy-tabix.
+
+  CASE ls_sflight-carrid.
+    WHEN 'AA'.
+      ls_sflight-carrid = 'KO'.
+
+      MODIFY lt_sflight FROM ls_sflight INDEX lv_tabix
+      TRANSPORTING carrid.
+
+  ENDCASE.
+
+ENDLOOP.
+
+<font color ="#0000FF">*cl_demo_output=&gt;display( lt_sflight ).</font>
+
+<font color ="#0000FF">**********************************************************************</font>
+
+SELECT carrid   connid    fldate   price
+       currency planetype seatsocc
+  INTO CORRESPONDING FIELDS OF TABLE lt_sflight2
+  FROM sflight
+ WHERE currency = 'USD'
+   AND planetype = '747-400'.
+
+IF sy-subrc &lt;&gt; 0.
+
+  WRITE : 'Data not found'.
+  STOP.
+
+ENDIF.
+
+LOOP AT lt_sflight2 INTO ls_sflight2.
+
+  lv_tabix = sy-tabix.
+
+  ls_sflight2-price    += 1000.
+  ls_sflight2-seatsocc *= 3.
+
+  MODIFY lt_sflight2 FROM ls_sflight2 INDEX lv_tabix
+  TRANSPORTING price seatsocc.
+
+ENDLOOP.
+
+<font color ="#0000FF">*cl_demo_output=&gt;display( lt_sflight2 ).</font>
+
+<font color ="#0000FF">**********************************************************************</font>
+
+SELECT carrid connid     fldate bookid   customid
+       class  luggweight wunit  forcuram forcurkey
+  INTO CORRESPONDING FIELDS OF TABLE lt_sbook
+  FROM sbook
+ WHERE carrid = 'dl' "일부러 에러나게 한 것임
+   AND fldate IN ( '20251013', '20251216' ).
+
+<font color ="#0000FF">*cl_demo_output=&gt;display( lt_sbook ).</font>
+
+IF sy-subrc &lt;&gt; 0.
+<font color ="#0000FF">* 생짜 원시적인 방법</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'S'.</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'I'. "팝업으로 띄우기</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'E'.</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'X'.</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'S' DISPLAY LIKE 'E'.</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'S' DISPLAY LIKE 'W'.</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'I' DISPLAY LIKE 'E'. "I 형식으로 Erorr 표시</font>
+<font color ="#0000FF">*  MESSAGE 'Data not found' TYPE 'I' DISPLAY LIKE 'W'. "I 형식으로 Erorr 표시</font>
+
+<font color ="#0000FF">* 더 좋은 방법</font>
+  MESSAGE s001 DISPLAY LIKE 'E'.
+  MESSAGE s001(zc519m).
+  STOP.
+
+ENDIF.
+
+LOOP AT lt_sbook INTO ls_sbook.
+
+  lv_tabix = sy-tabix.
+
+  CASE ls_sbook-fldate.
+    WHEN '20251013'.
+      ls_sbook-class = 'C'.
+
+      MODIFY lt_sbook FROM ls_sbook INDEX lv_tabix
+      TRANSPORTING class.
+
+    WHEN '20251216'.
+      ls_sbook-class = 'F'.
+
+      MODIFY lt_sbook FROM ls_sbook INDEX lv_tabix
+      TRANSPORTING class.
+
+  ENDCASE.
+
+ENDLOOP.
+
+<font color ="#0000FF">*cl_demo_output=&gt;display( lt_sbook ).</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_26</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_26</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.05 note 25에서 text 뒤늦게 넣기</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_26</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_26 MESSAGE-ID zc519m.
+
+TABLES : aufk.
+
+DATA : BEGIN OF ls_order,
+         aufnr      TYPE afko-aufnr,
+         posnr      TYPE afpo-posnr,
+         auart      TYPE aufk-auart,
+         auart_txt  TYPE t003p-txt, "auart의 내역
+         autyp      TYPE aufk-autyp,
+         gsber      TYPE aufk-gsber,
+         gtext      TYPE tgsbt-gtext, "gsber의 내역
+         gstrp      TYPE afko-gstrp,
+         gltrp      TYPE afko-gltrp,
+         plnbez     TYPE afko-plnbez,
+         plnbez_txt TYPE makt-maktx, "plnbez의 내역
+         matnr      TYPE afpo-matnr,
+         maktx      TYPE makt-maktx, "matnr의 내역
+         psmng      TYPE afpo-psmng,
+         amein      TYPE afpo-amein,
+       END OF ls_order,
+
+       lt_order LIKE TABLE OF ls_order,
+       ls_t003p TYPE t003p,
+       lt_t003p LIKE TABLE OF ls_t003p,
+       ls_tgsbt TYPE tgsbt,
+       lt_tgsbt LIKE TABLE OF ls_tgsbt,
+       ls_makt  TYPE makt,
+       lt_makt  LIKE TABLE OF ls_makt,
+
+       lv_tabix TYPE sy-tabix.
+
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS so_aufnr FOR aufk-aufnr.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+CLEAR   : ls_order, ls_t003p, ls_tgsbt, ls_makt, lv_tabix.
+REFRESH : lt_order, lt_t003p, lt_tgsbt, lt_makt.
+
+SELECT a~auart a~autyp a~gsber
+       b~aufnr b~gstrp b~gltrp b~plnbez
+       c~posnr c~matnr c~psmng c~amein
+  INTO CORRESPONDING FIELDS OF TABLE lt_order
+  FROM aufk AS a
+ INNER JOIN afko AS b
+    ON a~aufnr = b~aufnr
+ INNER JOIN afpo AS c
+    ON b~aufnr = c~aufnr
+ WHERE a~aufnr IN so_aufnr. "select option은 in 쓰기
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+SELECT auart txt
+  INTO CORRESPONDING FIELDS OF TABLE lt_t003p
+  FROM t003p
+ WHERE spras = sy-langu.
+
+SELECT gsber gtext
+  INTO CORRESPONDING FIELDS OF TABLE lt_tgsbt
+  FROM tgsbt
+ WHERE spras = sy-langu.
+
+SELECT matnr maktx
+  INTO CORRESPONDING FIELDS OF TABLE lt_makt
+  FROM makt
+ WHERE spras = sy-langu.
+
+LOOP AT lt_order INTO ls_order.
+
+  lv_tabix = sy-tabix.
+
+  READ TABLE lt_t003p INTO ls_t003p WITH KEY auart = ls_order-auart.
+
+  IF sy-subrc = 0.
+    ls_order-auart_txt = ls_t003p-txt.
+
+    MODIFY lt_order FROM ls_order INDEX lv_tabix
+    TRANSPORTING auart_txt.
+
+  ENDIF.
+
+  READ TABLE lt_tgsbt INTO ls_tgsbt WITH KEY gsber = ls_order-gsber.
+
+  IF sy-subrc = 0.
+    ls_order-gtext = ls_tgsbt-gtext.
+
+    MODIFY lt_order FROM ls_order INDEX lv_tabix
+    TRANSPORTING gtext.
+
+  ENDIF.
+
+  READ TABLE lt_makt INTO ls_makt WITH KEY matnr = ls_order-plnbez.
+
+  IF sy-subrc = 0.
+    ls_order-plnbez_txt = ls_makt-maktx.
+
+    MODIFY lt_order FROM ls_order INDEX lv_tabix
+    TRANSPORTING plnbez_txt.
+
+  ENDIF.
+
+  READ TABLE lt_makt INTO ls_makt WITH KEY matnr = ls_order-matnr.
+
+  IF sy-subrc = 0.
+    ls_order-maktx = ls_makt-maktx.
+
+    MODIFY lt_order FROM ls_order INDEX lv_tabix
+    TRANSPORTING maktx.
+
+  ENDIF.
+
+ENDLOOP.
+
+cl_demo_output=&gt;display( lt_order ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Options</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_AUFNR D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_27</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_27</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.05 note 24에서 text 뒤늦게 넣기</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_27</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_27 MESSAGE-ID zc519m.
+
+TABLES : ekko.
+
+DATA : BEGIN OF ls_purc,
+         ebeln TYPE ekko-ebeln,
+         ebelp TYPE ekpo-ebelp,
+         bukrs TYPE ekko-bukrs,
+         butxt TYPE t001-butxt, "bukrs의 내역
+         bstyp TYPE ekko-bstyp,
+         bsart TYPE ekko-bsart,
+         batxt TYPE t161t-batxt, "bsart의 내역
+         matnr TYPE ekpo-matnr,
+         maktx TYPE makt-maktx, "matnr의 내역
+         werks TYPE ekpo-werks,
+         name1 TYPE t001w-name1, "werks의 내역
+         menge TYPE ekpo-menge,
+         meins TYPE ekpo-meins,
+       END OF ls_purc,
+
+       lt_purc  LIKE TABLE OF ls_purc,
+       ls_t001  TYPE t001,
+       lt_t001  LIKE TABLE OF ls_t001,
+       ls_t161t TYPE t161t,
+       lt_t161t LIKE TABLE OF ls_t161t,
+       ls_makt  TYPE makt,
+       lt_makt  LIKE TABLE OF ls_makt,
+       ls_t001w TYPE t001w,
+       lt_t001w LIKE TABLE OF ls_t001w,
+
+       lv_tabix TYPE sy-tabix.
+
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS : so_ebeln FOR ekko-ebeln.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+CLEAR   : ls_purc, ls_t001, ls_t161t, ls_makt, ls_t001w, lv_tabix.
+REFRESH : lt_purc, lt_t001, lt_t161t, lt_makt, lt_t001w.
+
+SELECT a~ebeln a~bukrs a~bstyp a~bsart
+       b~ebelp b~matnr b~werks b~menge b~meins
+  INTO CORRESPONDING FIELDS OF TABLE lt_purc
+  FROM ekko AS a
+ INNER JOIN ekpo AS b
+    ON a~ebeln = b~ebeln
+ WHERE a~ebeln IN so_ebeln. "select option에는 IN을 써야 함
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+SELECT bukrs butxt
+  INTO CORRESPONDING FIELDS OF TABLE lt_t001
+  FROM t001.
+
+SELECT bsart bstyp batxt
+  INTO CORRESPONDING FIELDS OF TABLE lt_t161t
+  FROM t161t
+ WHERE spras = sy-langu.
+
+SELECT matnr maktx
+  INTO CORRESPONDING FIELDS OF TABLE lt_makt
+  FROM makt
+ WHERE spras = sy-langu.
+
+SELECT werks name1
+  INTO CORRESPONDING FIELDS OF TABLE lt_t001w
+  FROM t001w.
+
+LOOP AT lt_purc INTO ls_purc.
+
+  lv_tabix = sy-tabix.
+
+  READ TABLE lt_t001 INTO ls_t001 WITH KEY bukrs = ls_purc-bukrs.
+
+  IF sy-subrc = 0.
+    ls_purc-butxt = ls_t001-butxt.
+
+    MODIFY lt_purc FROM ls_purc INDEX lv_tabix
+    TRANSPORTING butxt.
+
+  ENDIF.
+
+<font color ="#0000FF">* 여기에서 두 개의 필드를 with key에 넣어야 한다.</font>
+  READ TABLE lt_t161t INTO ls_t161t WITH KEY bsart = ls_purc-bsart
+                                             bstyp = ls_purc-bstyp.
+
+  IF sy-subrc = 0.
+    ls_purc-batxt = ls_t161t-batxt.
+
+    MODIFY lt_purc FROM ls_purc INDEX lv_tabix
+    TRANSPORTING batxt.
+
+  ENDIF.
+
+  READ TABLE lt_makt INTO ls_makt WITH KEY matnr = ls_purc-matnr.
+
+  IF sy-subrc = 0.
+    ls_purc-maktx = ls_makt-maktx.
+
+    MODIFY lt_purc FROM ls_purc INDEX lv_tabix
+    TRANSPORTING maktx.
+
+  ENDIF.
+
+  READ TABLE lt_t001w INTO ls_t001w WITH KEY werks = ls_purc-werks.
+
+  IF sy-subrc = 0.
+    ls_purc-name1 = ls_t001w-name1.
+
+    MODIFY lt_purc FROM ls_purc INDEX lv_tabix
+    TRANSPORTING name1.
+
+  ENDIF.
+
+ENDLOOP.
+
+cl_demo_output=&gt;display( lt_purc ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Screen</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_EBELN D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_35</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_35</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.09 LINE OF, TYPES</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_35</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_35 MESSAGE-ID zc519m.
+
+<font color ="#0000FF">*gtt_marc와 gtt_marc2는 동일함.</font>
+<font color ="#0000FF">* 테이블 타입을 받아서 테이블 타입을 사용할 수 없음.</font>
+<font color ="#0000FF">* ex) gtt_marc2 TYPE gtt_marc. 안 됨</font>
+TYPES : gty_marc  TYPE marc,             "Structure Type
+        gtt_marc  TYPE TABLE OF marc,    "ITAB --&gt; Table Type
+        gtt_marc2 TYPE TABLE OF gty_marc, "ITAB --&gt; Table Type
+        gty_marc3 TYPE LINE OF gtt_marc,  "Structure Type
+
+        gtv_name(10),
+
+        BEGIN OF gty_line,
+          belnr TYPE bkpf-belnr,
+          gjahr TYPE bkpf-gjahr,
+          bukrs TYPE bkpf-bukrs,
+        END OF gty_line.
+
+<font color ="#0000FF">*TYPES를 사용해서 객체 선언</font>
+DATA : gs_marc  TYPE gty_marc,          "Structure
+       gt_marc  TYPE TABLE OF gty_marc, "ITAB
+       gt_marc2 TYPE gtt_marc,          "ITAB
+       gs_marc2 TYPE LINE OF gtt_marc,  "Structure
+
+       gv_name  TYPE gtv_name,
+
+       BEGIN OF gs_list,
+         matnr TYPE gty_marc-matnr,
+         wekrs TYPE marc-werks.
+         INCLUDE TYPE gty_line.
+         "INCLUDE TYPE scarr. "이게 됨.
+         "즉, INCLUDE TYPE은 만능이다.
+         "하지만 그냥 구분해서 쓰는 게 좋을 듯
+         INCLUDE STRUCTURE scarr.
+DATA : mtart TYPE mara-mtart,
+       END OF gs_list.
+
+"글로벌 데이터 타입
+
+<font color ="#0000FF">* global type와 types로 선언한 것은 type으로 할 수 있다.</font>
+DATA : gs_mara  TYPE mara,             "Structure
+       gt_mara  LIKE TABLE OF gs_mara, "ITAB
+       gt_mara2 TYPE TABLE OF mara,    "ITAB
+       gs_mara2 LIKE gs_mara,          "Structure
+       gt_mara3 LIKE gt_mara,          "ITAB  " 테이블임
+       gs_mara3 LIKE LINE OF gt_mara.  "Structure "스트럭처임
+
+<font color ="#0000FF">* mara의 경우에는 transparent table이기 때문에</font>
+<font color ="#0000FF">* 스트럭처형태이다.</font>
+<font color ="#0000FF">* 그래서 table은 스트럭처이다.</font>
+DATA : table LIKE mara. "Structure
+
+BREAK-POINT.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

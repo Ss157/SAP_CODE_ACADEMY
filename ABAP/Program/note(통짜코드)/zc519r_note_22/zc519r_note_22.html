@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_22</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_22</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.04 텍스트 내역 뒤늦게 넣기</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_22</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_22 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF ls_post,
+         bukrs TYPE bkpf-bukrs,
+         butxt TYPE t001-butxt, "bukrs의 내역 t001=value table
+         belnr TYPE bkpf-belnr,
+         gjahr TYPE bkpf-gjahr,
+         hkont TYPE bseg-hkont,
+         txt20 TYPE skat-txt20, "hkont의 내역
+         dmbtr TYPE bseg-dmbtr,
+         waers TYPE bkpf-waers,
+         bschl TYPE bseg-bschl,
+       END OF ls_post,
+
+       lt_post  LIKE TABLE OF ls_post,
+
+       ls_t001  TYPE t001,
+       lt_t001  LIKE TABLE OF ls_t001,
+
+       ls_skat  TYPE skat,
+       lt_skat  LIKE TABLE OF ls_skat,
+
+       lv_tabix TYPE sy-tabix.
+
+CLEAR   : ls_post, ls_t001, ls_skat.
+REFRESH : lt_post, lt_t001, lt_skat.
+
+SELECT a~bukrs a~belnr a~gjahr a~waers
+       b~hkont b~dmbtr b~bschl
+  INTO CORRESPONDING FIELDS OF TABLE lt_post
+  FROM bkpf AS a
+ INNER JOIN bseg AS b
+    ON a~bukrs = b~bukrs
+   AND a~belnr = b~belnr
+   AND a~gjahr = b~gjahr
+  ORDER BY a~bukrs a~belnr DESCENDING a~gjahr. " SQL을 통한 정렬
+<font color ="#0000FF">* bukrs = asc, belnr = desc, gjahr asc으로 개별 정의 해야 함.</font>
+
+<font color ="#0000FF">* ITAB을 정렬 sort</font>
+<font color ="#0000FF">* select에서와 마찬가지로 정렬을 개별 정의함.</font>
+SORT lt_post BY bukrs belnr DESCENDING gjahr.
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+<font color ="#0000FF">* lt_post의 butxt, txt20 필드를 lt_t001과 lt_skat_itab을</font>
+<font color ="#0000FF">* 이용해서 내역을 가져옴</font>
+<font color ="#0000FF">* 텍스트를 가진 itab에 레코드를 미리 채워놔야 함</font>
+SELECT bukrs butxt
+  INTO CORRESPONDING FIELDS OF TABLE lt_t001
+  FROM t001.
+
+<font color ="#0000FF">* KTOPL 은 'INT'로 하기</font>
+SELECT saknr txt20
+  INTO CORRESPONDING FIELDS OF TABLE lt_skat
+  FROM skat
+ WHERE spras = sy-langu
+   AND ktopl = 'INT'.
+
+<font color ="#0000FF">* lt_post가 텍스트 itab을 이용해서 butxt, txt20 값을 얻어서 넣기</font>
+LOOP AT lt_post INTO ls_post.
+
+  lv_tabix = sy-tabix.
+
+<font color ="#0000FF">* butxt에 값 넣기</font>
+  READ TABLE lt_t001 INTO ls_t001 WITH KEY bukrs = ls_post-bukrs.
+
+  IF sy-subrc = 0.
+    ls_post-butxt = ls_t001-butxt.
+    MODIFY lt_post FROM ls_post INDEX lv_tabix
+    TRANSPORTING butxt.
+  ENDIF.
+
+<font color ="#0000FF">* txt20에 값 넣기</font>
+  READ TABLE lt_skat INTO ls_skat WITH KEY saknr = ls_post-hkont.
+
+  IF sy-subrc = 0.
+    ls_post-txt20 = ls_skat-txt20.
+    MODIFY lt_post FROM ls_post INDEX lv_tabix
+    TRANSPORTING txt20.
+  ENDIF.
+
+ENDLOOP.
+
+cl_demo_output=&gt;display( lt_post ).
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

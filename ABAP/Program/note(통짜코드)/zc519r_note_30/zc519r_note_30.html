@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_30</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_30</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.08 move corresponding</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_30</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_30 MESSAGE-ID zc519m.
+
+TABLES : scarr.
+
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS so_carr FOR scarr-carrid.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+DATA : ls_scarr TYPE scarr,
+       lt_scarr LIKE TABLE OF ls_scarr,
+       ls_spfli TYPE spfli,
+       lt_spfli LIKE TABLE OF ls_spfli,
+
+       BEGIN OF ls_sflight,
+         carrid    TYPE sflight-carrid,
+         connid    TYPE sflight-connid,
+         fldate    TYPE sflight-fldate,
+         carrname  TYPE scarr-carrname,
+         countryfr TYPE spfli-countryfr,
+         cityfrom  TYPE spfli-cityfrom,
+         price     TYPE sflight-price,
+         currency  TYPE sflight-Currency,
+         url       TYPE scarr-url,
+       END OF ls_sflight,
+
+       lt_sflight LIKE TABLE OF ls_sflight.
+
+CLEAR   : ls_scarr, ls_spfli, ls_sflight.
+REFRESH : lt_scarr, lt_spfli, lt_sflight.
+
+SELECT carrid carrname currcode url
+  INTO CORRESPONDING FIELDS OF TABLE lt_scarr
+  FROM scarr
+ WHERE carrid IN so_carr.
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+SELECT carrid connid countryfr cityfrom
+  INTO CORRESPONDING FIELDS OF TABLE lt_spfli
+  FROM spfli
+ WHERE carrid IN so_carr.
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+SELECT carrid connid fldate price currency
+  INTO CORRESPONDING FIELDS OF TABLE lt_sflight
+  FROM sflight
+ WHERE carrid IN so_carr.
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+<font color ="#0000FF">* loop를 사용해서 lt_scarr의 모든 레코드를 lt_spfli에 추가하기</font>
+<font color ="#0000FF">* carrid가 JL이면 KA로 바꿔서 넣고 cityfrom에 Incheon을 쓰기</font>
+LOOP AT lt_scarr INTO ls_scarr.
+
+  MOVE-CORRESPONDING ls_scarr TO ls_spfli.
+
+  CASE ls_spfli-carrid.
+    WHEN 'JL'.
+      ls_spfli-carrid   = 'KA'.
+      ls_spfli-cityfrom = 'Incheon'.
+  ENDCASE.
+
+  APPEND ls_spfli TO lt_spfli.
+  CLEAR : ls_spfli.
+
+ENDLOOP.
+
+MOVE-CORRESPONDING lt_spfli TO lt_sflight KEEPING TARGET LINES.
+
+cl_demo_output=&gt;display( lt_sflight ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_CARR D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

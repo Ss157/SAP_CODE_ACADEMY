@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_05</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_05</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.11.27 internal table 실습 + 수업</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_05</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_05.
+
+DATA : gs_flight    TYPE zc519t0028,
+       gt_flight    LIKE TABLE OF gs_flight,
+
+       lv_tabix     TYPE sy-tabix,
+       lv_name(10),
+       lv_name2(10),
+       lv_name3(10).
+
+gs_flight-carrid     = 'AA'.
+gs_flight-fldate     = '20251125'.
+gs_flight-airpfrom   = '서울'.
+gs_flight-airpto     = '부산'.
+gs_flight-connid     = '1'.
+gs_flight-bookid     = '2'.
+gs_flight-price      = '10000'.
+gs_flight-currcode   = 'USD'.
+gs_flight-customid   = '10'.
+gs_flight-luggweight = '10'.
+gs_flight-wunit      = 'kg'.
+
+APPEND gs_flight TO gt_flight.
+CLEAR gs_flight.
+
+gs_flight-carrid     = 'LH'.
+gs_flight-fldate     = '20251124'.
+gs_flight-airpfrom   = '도쿄'.
+gs_flight-airpto     = '서울'.
+gs_flight-connid     = '2'.
+gs_flight-bookid     = '5'.
+gs_flight-price      = '100'.
+gs_flight-currcode   = 'USD'.
+gs_flight-customid   = '11'.
+gs_flight-luggweight = '15'.
+gs_flight-wunit      = 'kg'.
+
+APPEND gs_flight TO gt_flight.
+CLEAR gs_flight.
+
+gs_flight-carrid   = 'GS'.
+gs_flight-fldate   = '20251120'.
+gs_flight-airpfrom = '하노이'.
+gs_flight-airpto   = '부산'.
+gs_flight-connid     = '3'.
+gs_flight-bookid     = '4'.
+gs_flight-price      = '1000'.
+gs_flight-currcode   = 'USD'.
+gs_flight-customid   = '12'.
+gs_flight-luggweight = '20'.
+gs_flight-wunit      = 'kg'.
+
+APPEND gs_flight TO gt_flight.
+CLEAR gs_flight.
+
+gs_flight-carrid   = 'AB'.
+gs_flight-fldate   = '20251115'.
+gs_flight-airpfrom = 'ACA'.
+gs_flight-airpto   = '카이로'.
+gs_flight-connid     = '1'.
+gs_flight-bookid     = '2'.
+gs_flight-price      = '100'.
+gs_flight-currcode   = 'USD'.
+gs_flight-customid   = '13'.
+gs_flight-luggweight = '10'.
+gs_flight-wunit      = 'kg'.
+
+APPEND gs_flight TO gt_flight.
+CLEAR gs_flight.
+
+gs_flight-carrid   = 'AC'.
+gs_flight-fldate   = '20251113'.
+gs_flight-airpfrom = '서울'.
+gs_flight-airpto   = '부산'.
+gs_flight-connid     = '1'.
+gs_flight-bookid     = '2'.
+gs_flight-price      = '10'.
+gs_flight-currcode   = 'USD'.
+gs_flight-customid   = '14'.
+gs_flight-luggweight = '15'.
+gs_flight-wunit      = 'kg'.
+
+APPEND gs_flight TO gt_flight.
+CLEAR gs_flight.
+
+READ TABLE gt_flight INTO gs_flight INDEX 1.
+IF ( sy-subrc = 0 ).
+  WRITE : gs_flight-carrid, gs_flight-connid, gs_flight-fldate, gs_flight-airpfrom, gs_flight-airpto,/.
+ENDIF.
+CLEAR gs_flight.
+
+READ TABLE gt_flight INTO gs_flight INDEX 2.
+IF ( sy-subrc = 0 ).
+  WRITE : gs_flight-carrid, gs_flight-connid, gs_flight-fldate, gs_flight-airpfrom, gs_flight-airpto,/.
+ENDIF.
+CLEAR gs_flight.
+
+READ TABLE gt_flight INTO gs_flight INDEX 4.
+IF ( sy-subrc = 0 ).
+  WRITE : gs_flight-carrid, gs_flight-connid, gs_flight-fldate, gs_flight-airpfrom, gs_flight-airpto,/.
+ENDIF.
+CLEAR gs_flight.
+
+<font color ="#0000FF">**********************************************************************</font>
+
+<font color ="#0000FF">* script 에서 switch case 구문이 있다</font>
+<font color ="#0000FF">* switch (값 or 변수 or 수식)</font>
+<font color ="#0000FF">* {</font>
+<font color ="#0000FF">*   case &lt;값&gt;(변수) : 로직 break;</font>
+<font color ="#0000FF">*   case &lt;값&gt;(변수) : 로직 break;</font>
+<font color ="#0000FF">*   case &lt;값&gt;(변수) : 로직 break;</font>
+<font color ="#0000FF">*   default   : 로직 break;</font>
+<font color ="#0000FF">*  }</font>
+<font color ="#0000FF">* 조건에 맞는 case 를 만나면 그부분부터 나머지 case도 모두</font>
+<font color ="#0000FF">* 수행하기 때문에 case 로직이 끝나는 부분에서 break 를 해줘야</font>
+<font color ="#0000FF">* 다른 case를 수행하지 않는다</font>
+<font color ="#0000FF">* 위 구문을 ABAP 으로 표현해보자</font>
+
+<font color ="#0000FF">* Script 와 다르게 ABAP 은 조건에 맞는 WHEN 을 수행하고 나면</font>
+<font color ="#0000FF">* CASE 구문을 빠져 나간다</font>
+<font color ="#0000FF">*CASE 값.</font>
+<font color ="#0000FF">*	WHEN 변수.</font>
+<font color ="#0000FF">*	WHEN 변수.</font>
+<font color ="#0000FF">*	WHEN OTHERS. " 위 조건에 맞는게 없다면.. 이거</font>
+<font color ="#0000FF">*ENDCASE.</font>
+
+<font color ="#0000FF">*CASE 변수.</font>
+<font color ="#0000FF">*	WHEN 값.</font>
+<font color ="#0000FF">*	WHEN 값.</font>
+<font color ="#0000FF">*	WHEN OTHERS. " 위 조건에 맞는게 없다면.. 이거</font>
+<font color ="#0000FF">*ENDCASE.</font>
+
+lv_name = 'AB'.
+
+CASE lv_name.
+  WHEN 'AB'.
+    WRITE : 'AB 매칭'. "-&gt;이거 수행함
+
+  WHEN 'BA'.
+    WRITE : 'BA 매칭'.
+
+  WHEN 'ABAP'.
+    WRITE : 'ABAP 매칭'.
+
+ENDCASE.
+
+lv_name2 = 'BA'.
+lv_name3 = 'ABAP'.
+
+CASE 'ABAP'.
+  WHEN lv_name.
+    WRITE : 'lv_name 매칭'.
+
+  WHEN lv_name2.
+    WRITE : 'lv_name2 매칭'.
+
+  WHEN lv_name3.
+    WRITE : 'lv_name3 매칭'. "-&gt;이거 수행함
+
+ENDCASE.
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">* DO 문</font>
+DO ( 5 - 2 ) TIMES. "가능함
+  WRITE 'a'.
+ENDDO.
+
+DO '5' TIMES. "가능함
+  WRITE 'a'.
+ENDDO.
+
+DATA : lv_cnt TYPE i.
+
+DO 5 TIMES.
+  lv_cnt += 1.
+  WRITE : sy-index,/.
+ENDDO.
+
+
+<font color ="#0000FF">* 구구단 찍기</font>
+DATA : lv_dan    TYPE i,
+       lv_result TYPE i.
+
+DO 8 TIMES.
+  lv_dan = sy-index + 1.
+
+  DO 9 TIMES.
+    lv_result = lv_dan * sy-index.
+    WRITE : lv_dan, '*', sy-index, '=', lv_result.
+  ENDDO.
+  WRITE /.
+ENDDO.
+
+
+DO 5 TIMES.
+  DO sy-index TIMES.
+    WRITE '*'.
+  ENDDO.
+  WRITE /.
+ENDDO.
+
+DO 5 TIMES.
+  DO 6 - sy-index TIMES.
+    WRITE '*'.
+  ENDDO.
+  WRITE /.
+ENDDO.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

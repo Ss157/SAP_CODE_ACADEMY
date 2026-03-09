@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_39</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_39</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.09 헤더 있 없 비교</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_39</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_39.
+
+DATA : gs_scarr TYPE scarr,
+       gt_scarr LIKE TABLE OF gs_scarr,
+       gt_list  TYPE TABLE OF scarr WITH HEADER LINE.
+
+<font color ="#0000FF">* 설거지</font>
+
+gs_scarr-carrid   = 'AA'.
+gs_scarr-carrname = 'American Air'.
+
+APPEND gs_scarr TO gt_scarr.
+CLEAR  gs_scarr.
+
+<font color ="#0000FF">* 밑에다가 gt_list 에 위의 append 로직을 똑같이 구현해봐</font>
+gt_list-carrid   = 'AA'.
+gt_list-carrname = 'American Air'.
+
+APPEND gt_list.
+CLEAR  gt_list.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

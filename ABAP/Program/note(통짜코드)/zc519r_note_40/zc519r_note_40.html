@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_40</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_40</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.09 라디오 버튼에 따른 select 실습</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_40</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_40 MESSAGE-ID zc519m.
+
+TABLES : sbuspart.
+
+<font color ="#0000FF">*DATA : gt_buspart TYPE TABLE OF sbuspart,</font>
+DATA : gt_buspart TYPE zc519tt001, "table type 사용
+       gv_check   TYPE sbuspart-buspatyp.
+
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  PARAMETERS     : pa_buspa TYPE sbuspart-buspartnum OBLIGATORY.
+
+  SELECT-OPTIONS : so_cont FOR sbuspart-contact NO INTERVALS.
+
+  PARAMETERS     : pa_rb1 RADIOBUTTON GROUP rb1 DEFAULT 'X',
+                   pa_rb2 RADIOBUTTON GROUP rb1.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+CLEAR   : gv_check.
+REFRESH : gt_buspart.
+
+CASE 'X'.
+  WHEN pa_rb1.
+    gv_check = 'TA'.
+  WHEN pa_rb2.
+    gv_check = 'FC'.
+ENDCASE.
+
+SELECT buspartnum contact contphono buspatyp
+  INTO CORRESPONDING FIELDS OF TABLE gt_buspart
+  FROM sbuspart
+ WHERE buspartnum = pa_buspa
+   AND contact   IN so_cont
+   AND buspatyp   = gv_check.
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+cl_demo_output=&gt;display( gt_buspart ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Option</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_BUSPA D       .</font>
+<font color ="#0000FF">* PA_RB1         TA</font>
+<font color ="#0000FF">* PA_RB2         FC</font>
+<font color ="#0000FF">* SO_CONT D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
