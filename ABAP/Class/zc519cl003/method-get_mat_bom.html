@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>GET_MAT_BOM</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: GET_MAT_BOM</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] Material Bom</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">**************************************************************************</font>
+<font color ="#0000FF">*   Method attributes.                                                   *</font>
+<font color ="#0000FF">**************************************************************************</font>
+Instantiation: Public
+<font color ="#0000FF">**************************************************************************</font>
+
+  METHOD get_mat_bom.
+
+    CLEAR   : ev_code, ev_msg.
+    REFRESH : et_data.
+
+    SELECT a~matnr a~werks a~stlan
+           b~stlnr b~stlty
+           c~stlkn c~idnrk c~postp c~posnr
+           c~menge c~meins c~sanka
+           d~maktx
+           e~maktx AS idnrk_txt
+      INTO CORRESPONDING FIELDS OF TABLE et_data
+      FROM mast      AS a
+     INNER JOIN stko AS b
+        ON a~stlnr = b~stlnr
+       AND a~stlal = b~stlal
+     INNER JOIN stpo AS c
+        ON b~stlty = c~stlty
+       AND b~stlnr = c~stlnr
+      LEFT OUTER JOIN makt AS d
+        ON a~matnr = d~matnr
+       AND d~spras = sy-langu
+      LEFT OUTER JOIN makt AS e
+        ON c~idnrk = e~matnr
+       AND e~spras = sy-langu
+     WHERE a~werks  = iv_werks
+       AND a~matnr IN it_matnr.
+
+    IF sy-subrc &lt;&gt; 0.
+
+      ev_code = 'E'.
+      ev_msg  = 'Data not found'.
+
+    ELSE.
+
+      ev_code = 'S'.
+
+    ENDIF.
+
+  ENDMETHOD.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>GET_BILL</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: GET_BILL</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] Bill of Materials Master</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">**************************************************************************</font>
+<font color ="#0000FF">*   Method attributes.                                                   *</font>
+<font color ="#0000FF">**************************************************************************</font>
+Instantiation: Public
+<font color ="#0000FF">**************************************************************************</font>
+
+  METHOD get_bill.
+
+    CLEAR   : ev_msg, ev_code.
+    REFRESH : et_data.
+
+    SELECT matnr werks stlan stlnr
+           stlal losbs losvn bmein
+           erdat erzet ernam
+           aedat aezet aenam
+      INTO CORRESPONDING FIELDS OF TABLE et_data
+      FROM zc519t0040
+     WHERE werks = iv_werks
+     ORDER BY matnr werks stlan stlnr stlal.
+
+    IF sy-subrc &lt;&gt; 0.
+
+      ev_code = 'E'.
+      ev_msg  = 'Data not found'.
+
+    ELSE.
+
+      ev_code = 'S'.
+
+    ENDIF.
+
+  ENDMETHOD.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
