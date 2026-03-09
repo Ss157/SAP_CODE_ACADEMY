@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_50</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_50</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.12 form 파라미터 전달 방식 ( sync 5 )</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_50</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT ZC519R_NOTE_50.
+
+<font color ="#0000FF">* Call by Value : 값만 전달하고 결과는 신경도 안쓰는 방식</font>
+<font color ="#0000FF">* Call by Value and Result : 값을 전달 하고 해당 서브루틴의 작업이 끝나면</font>
+<font color ="#0000FF">*                            결과값을 돌려 받는 방식</font>
+<font color ="#0000FF">* Call by Reference : 주소를 공유하는 방식으로 Sender 와 Receiver가</font>
+<font color ="#0000FF">*                     완전 동일시 되어 실시간으로 같이 값을 공유한다</font>
+
+TYPES : BEGIN OF gty_sss,
+          carrid TYPE sflight-carrid,
+          connid TYPE sflight-connid,
+          fldate TYPE sflight-fldate,
+        END OF gty_sss,
+
+        gtt_sss TYPE TABLE OF gty_sss.
+
+
+DATA : lv_name1(10) VALUE 'AAA',
+       lv_name2(10) VALUE 'BBB',
+       lv_name3(10) VALUE 'CCC',
+       lv_name4(10) VALUE 'SYNC',
+
+       ls_data      TYPE scarr,
+       lt_data      LIKE TABLE OF ls_data,
+       ls_list      TYPE spfli,
+       lt_list      LIKE TABLE OF ls_list,
+
+       BEGIN OF gs_sflight,
+         carrid TYPE sflight-carrid,
+         connid TYPE sflight-connid,
+         fldate TYPE sflight-fldate,
+       END OF gs_sflight,
+
+       gt_sflight LIKE TABLE OF gs_sflight,
+       gt_sfff    LIKE gt_sflight,
+
+       gs_sss     TYPE gty_sss,
+       gt_sss     TYPE gtt_sss.
+
+ls_data-carrid   = 'AA'.
+ls_data-carrname = 'America'.
+
+APPEND ls_data TO lt_data.
+CLEAR  ls_data.
+
+ls_data-carrid   = 'UA'.
+ls_data-carrname = 'United'.
+
+APPEND ls_data TO lt_data.
+CLEAR  ls_data.
+
+PERFORM check_param   TABLES lt_data
+                             lt_list
+                             gt_sflight
+                       USING lv_name1
+                             lv_name4
+                             '1'
+                    CHANGING lv_name2
+                             lv_name3.
+
+BREAK-POINT.
+
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form check_param</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; LV_NAME1</font>
+<font color ="#0000FF">*&      &lt;-- LV_NAME2</font>
+<font color ="#0000FF">*&      &lt;-- LV_NAME3</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM check_param  TABLES         pt_data STRUCTURE scarr "Call by Reference(헤더가짐)
+                                 pt_list
+                                 pt_sflight LIKE gt_sflight "Table type만 가능
+                  USING    VALUE(pv_name1)  "Call by Value
+                                 pv_name4   "Call by Reference(잘못된 위치,작동은 함)
+                           VALUE(pv_case)
+                  CHANGING VALUE(pv_name2)  "Call by Value and Result
+                                 pv_name3.  "Call by Reference
+
+  DATA : lt_spfli TYPE TABLE OF spfli WITH HEADER LINE,
+         lt_sbook TYPE TABLE OF sbook WITH HEADER LINE,
+
+         BEGIN OF lt_bkpf OCCURS 0,
+           bukrs TYPE bkpf-bukrs,
+           gjahr TYPE bkpf-gjahr,
+           belnr TYPE bkpf-belnr,
+         END OF lt_bkpf.
+
+<font color ="#0000FF">* 다이나믹하게 TABLES 를 사용하는 예</font>
+  CASE pv_case.
+    WHEN '1'.
+      MOVE-CORRESPONDING pt_list TO lt_spfli.
+
+    WHEN '2'.
+      MOVE-CORRESPONDING pt_list TO lt_sbook.
+
+    WHEN OTHERS.
+      MOVE-CORRESPONDING pt_list TO lt_bkpf.
+
+  ENDCASE.
+
+  pv_name1 = '에이에이'.
+  pv_name2 = '비비비비'.
+  pv_name3 = '씨씨'.
+  pv_name3 = '디디'.
+  pv_name3 = '이이'.
+  pv_name4 = 'SYNC5'.
+
+  LOOP AT pt_data.
+    pt_data-carrid   = 'KA'.
+    pt_data-carrname = 'Korean Air'.
+
+    MODIFY pt_data INDEX sy-tabix TRANSPORTING carrid carrname.
+  ENDLOOP.
+
+  LOOP AT lt_spfli.
+    lt_spfli-connid = '0017'.
+
+    MODIFY lt_spfli INDEX sy-tabix TRANSPORTING connid.
+  ENDLOOP.
+
+  LOOP AT pt_sflight.
+    pt_sflight-fldate = sy-datum.
+
+    MODIFY pt_sflight INDEX sy-tabix TRANSPORTING fldate.
+  ENDLOOP.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

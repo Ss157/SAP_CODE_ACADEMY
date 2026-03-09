@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_14</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_14</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.03 Test 2</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_14</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_14.
+
+<font color ="#0000FF">* TABLES는 select option을 사용할 때, 사용되는 것으로,</font>
+<font color ="#0000FF">* DATA : sflight TYPE sflight.과 의미가 같다.</font>
+TABLES : sflight.
+
+<font color ="#0000FF">* 파라미터를 이용해서 체크박스, 라디오버튼, 리스트박스 등을 구현했다.</font>
+<font color ="#0000FF">* 값입력을 강제하는 OBLIGATORY, 기본값을 부여하는 DEFAULT 등을 사용했다.</font>
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+  PARAMETERS : pa_fldat TYPE sflight-fldate OBLIGATORY,
+               pa_check AS CHECKBOX DEFAULT 'X'.
+
+  SELECTION-SCREEN SKIP 1.
+
+  PARAMETERS : pa_rb1 RADIOBUTTON GROUP rb1,
+               pa_rb2 RADIOBUTTON GROUP rb1 DEFAULT 'X',
+               pa_rb3 RADIOBUTTON GROUP rb1.
+
+  SELECTION-SCREEN ULINE.
+
+  PARAMETERS : pa_carnm TYPE scarr-carrname AS LISTBOX
+                                           VISIBLE LENGTH 20
+                                           DEFAULT 'Amerian Airlines'.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+
+<font color ="#0000FF">* select option 4개에 각각 NO-EXTENSION와 NO INTERVALS들을</font>
+<font color ="#0000FF">* 각각 사용하여 상위 값을 없애거나 여러 값을 넣을 수 있는 버튼을 없애보았다.</font>
+SELECTION-SCREEN BEGIN OF BLOCK bl2 WITH FRAME TITLE TEXT-t02.
+
+  SELECT-OPTIONS : so_car1 FOR sflight-carrid,
+  so_car2 FOR sflight-carrid NO-EXTENSION,
+  so_car3 FOR sflight-carrid NO INTERVALS OBLIGATORY,
+  so_car4 FOR sflight-carrid NO-EXTENSION NO INTERVALS.
+
+SELECTION-SCREEN END OF BLOCK bl2.
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection condition</font>
+<font color ="#0000FF">* T02 Select Options</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_CARNM         Airline</font>
+<font color ="#0000FF">* PA_CHECK         Check box</font>
+<font color ="#0000FF">* PA_FLDAT         Flight Date</font>
+<font color ="#0000FF">* PA_RB1         Radio 1</font>
+<font color ="#0000FF">* PA_RB2         Radio 2</font>
+<font color ="#0000FF">* PA_RB3         Radio 3</font>
+<font color ="#0000FF">* SO_CAR1         Airline</font>
+<font color ="#0000FF">* SO_CAR2         Airline</font>
+<font color ="#0000FF">* SO_CAR3         Airline</font>
+<font color ="#0000FF">* SO_CAR4         Airline</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

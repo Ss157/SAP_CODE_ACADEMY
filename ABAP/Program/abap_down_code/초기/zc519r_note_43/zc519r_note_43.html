@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R_NOTE_43</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R_NOTE_43</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  2025.12.10 table type 실습</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R_NOTE_43</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r_note_43 MESSAGE-ID zc519m.
+
+DATA : gs_data  TYPE LINE OF zc519tt002,
+       gt_data  TYPE zc519tt002,
+
+       gt_t005t TYPE TABLE OF t005t WITH HEADER LINE,
+       gt_t009t TYPE TABLE OF t009t WITH HEADER LINE,
+       gt_t014t TYPE TABLE OF t014t WITH HEADER LINE,
+
+       lv_tabix TYPE sy-tabix.
+
+CLEAR   : gs_data, gt_t005t, gt_t009t, gt_t014t, lv_tabix.
+REFRESH : gt_data, gt_t005t, gt_t009t, gt_t014t.
+
+SELECT bukrs butxt land1 periv kkber
+  INTO CORRESPONDING FIELDS OF TABLE gt_data
+  FROM t001.
+
+IF sy-subrc &lt;&gt; 0.
+  MESSAGE s001.
+  STOP.
+ENDIF.
+
+SELECT land1 landx
+  INTO CORRESPONDING FIELDS OF TABLE gt_t005t
+  FROM t005t
+ WHERE spras = sy-langu.
+
+SELECT periv ltext
+  INTO CORRESPONDING FIELDS OF TABLE gt_t009t
+  FROM t009t
+ WHERE spras = sy-langu.
+
+SELECT kkber kkbtx
+  INTO CORRESPONDING FIELDS OF TABLE gt_t014t
+  FROM t014t
+ WHERE spras = sy-langu.
+
+LOOP AT gt_data INTO gs_data.
+
+  lv_tabix = sy-tabix.
+
+  READ TABLE gt_t005t WITH KEY land1 = gs_data-land1.
+
+  IF sy-subrc = 0.
+    gs_data-landx = gt_t005t-landx.
+
+    MODIFY gt_data FROM gs_data INDEX lv_tabix
+    TRANSPORTING landx.
+  ENDIF.
+
+  READ TABLE gt_t009t WITH KEY periv = gs_data-periv.
+
+  IF sy-subrc = 0.
+    gs_data-ltext = gt_t009t-ltext.
+
+    MODIFY gt_data FROM gs_data INDEX lv_tabix
+    TRANSPORTING ltext.
+  ENDIF.
+
+  READ TABLE gt_t014t WITH KEY kkber = gs_data-kkber.
+
+  IF sy-subrc = 0.
+    gs_data-kkbtx = gt_t014t-kkbtx.
+
+    MODIFY gt_data FROM gs_data INDEX lv_tabix
+    TRANSPORTING kkbtx.
+  ENDIF.
+
+ENDLOOP.
+
+cl_demo_output=&gt;display( gt_data ).
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
