@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519FM_VENDING_MACHINE</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for function: ZC519FM_VENDING_MACHINE</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] 자판기</b></font>
+<hr>
+<pre width="100">
+FUNCTION zc519fm_vending_machine.
+<font color ="#0000FF">*"----------------------------------------------------------------------</font>
+<font color ="#0000FF">*"*"Local Interface:</font>
+<font color ="#0000FF">*"  IMPORTING</font>
+<font color ="#0000FF">*"     REFERENCE(PI_CASH) TYPE  INT4</font>
+<font color ="#0000FF">*"  EXPORTING</font>
+<font color ="#0000FF">*"     REFERENCE(PE_NAME) TYPE  CHAR20</font>
+<font color ="#0000FF">*"----------------------------------------------------------------------</font>
+
+<font color ="#0000FF">*       <a href ="global-zc519fm_vending_machine.html">Global data declarations</a></font>
+
+  CASE pi_cash.
+    WHEN 1500.
+      pe_name = '레쓰비'.
+
+    WHEN 1800.
+      pe_name = 'TOP'.
+
+    WHEN 2000.
+      pe_name = '메가커피'.
+
+    WHEN 3000.
+      pe_name = '스무디'.
+
+    WHEN 5000.
+      pe_name = 'TERRA캔'.
+
+    WHEN OTHERS.
+      pe_name = '돈먹음'.
+
+  ENDCASE.
+
+ENDFUNCTION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
