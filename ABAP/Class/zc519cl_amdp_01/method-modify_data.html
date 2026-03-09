@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MODIFY_DATA</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MODIFY_DATA</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">**************************************************************************</font>
+<font color ="#0000FF">*   Method attributes.                                                   *</font>
+<font color ="#0000FF">**************************************************************************</font>
+Instantiation: Public
+<font color ="#0000FF">**************************************************************************</font>
+
+  METHOD modify_data bY DATABASE PROCEDURE FOR HDB
+                     LANGUAGE SQLSCRIPT
+                     USING scarr.
+
+    DECLARE lv_tabix iNTEGER := 0;
+    DECLARE aCarrid   NVARCHAR( 3 )   ARRAY;
+    DECLARE aCarrname NVARCHAR( 20 )  ARRAY;
+    DECLARE aCurrcode NVARCHAR( 5 )   ARRAY;
+    DECLARE aUrl      NVARCHAR( 100 ) ARRAY;
+<font color ="#0000FF">*lt_scarr는 SELECT 문을 받을 테이블이라고 생각하면 됨.</font>
+    DECLARE CURSOR lt_scarr FOR
+            SELECT carrid, carrname, currcode, url
+              FROM scarr
+             WHERE mandt = session_context( 'CLIENT' );
+<font color ="#0000FF">*    LOOP 문 돌리는 중</font>
+    FOR ls_scarr AS lt_scarr DO
+      lv_tabix := lv_tabix + 1; --INDEX 하나씩 증가
+
+      aCarrid[lv_tabix]   := ls_scarr.carrid;
+      aCarrname[lv_tabix] := ls_scarr.carrname;
+      aCurrcode[lv_tabix] := ls_scarr.currcode;
+      aUrl[lv_tabix]      := ls_scarr.url;
+
+      IF ls_scarr.carrid = 'JL'
+      THEN aCarrid[lv_tabix]   := 'KA';
+           aCarrname[lv_tabix] := 'Korean Air';
+           aCurrcode[lv_tabix] := 'KRW';
+           aUrl[lv_tabix]      := 'www.korean-air.co.kr';
+      END IF;
+
+    END FOR;
+
+    et_list = UNNEST (:aCarrid, :aCarrname, :aCurrcode, :aUrl)
+              AS ("CARRID", "CARRNAME", "CURRCODE", "URL");
+
+  ENDMETHOD.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

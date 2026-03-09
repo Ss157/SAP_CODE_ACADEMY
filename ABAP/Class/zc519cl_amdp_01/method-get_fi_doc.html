@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>GET_FI_DOC</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: GET_FI_DOC</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">**************************************************************************</font>
+<font color ="#0000FF">*   Method attributes.                                                   *</font>
+<font color ="#0000FF">**************************************************************************</font>
+Instantiation: Public
+<font color ="#0000FF">**************************************************************************</font>
+
+  METHOD get_fi_doc BY DATABASE PROCEDURE FOR HDB
+                    LANGUAGE SQLSCRIPT
+                    USING bkpf zc519cl_amdp_01=&gt;get_bseg.
+
+    et_fi_doc = select a.bukrs, a.belnr, b.buzei,
+                       b.gjahr, b.hkont, b.wrbtr, b.pswsl
+                  fROM bkpf as a
+                 inner join "ZC519CL_AMDP_01=&gt;GET_BSEG"() AS b
+                    on a.mandt = b.mandt
+                   and a.bukrs = b.bukrs
+                   and a.belnr = b.belnr
+                 where a.mandt = session_context( 'CLIENT' )
+                   and a.bukrs = :iv_bukrs
+                   and a.gjahr = :iv_gjahr;
+
+  ENDMETHOD.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
