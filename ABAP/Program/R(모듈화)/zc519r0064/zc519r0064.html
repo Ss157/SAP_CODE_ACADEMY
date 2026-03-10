@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0064</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0064</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] For all entries in Training - Table & ITAB Join</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0064</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0064 MESSAGE-ID zc519m.
+
+<font color ="#0000FF">* ALV 용 ITAB! ( 출력용 ITAB )</font>
+DATA : BEGIN OF gs_data,
+         carrid   TYPE spfli-carrid,
+         connid   TYPE spfli-connid,
+         airpfrom TYPE spfli-airpfrom,
+         airpto   TYPE spfli-airpto,
+       END OF gs_data,
+
+       gt_data LIKE TABLE OF gs_data.
+
+<font color ="#0000FF">******프로그램을 개발 하고 있었어~~***********</font>
+<font color ="#0000FF">* SPFLI 테이블을 select 할 시점이 됐어.. 로직상...</font>
+<font color ="#0000FF">* 근데.. 그냥 select 가 아니라.. 특정 itab 에 있는 레코드에</font>
+<font color ="#0000FF">* 관련된 레코드만 select 를 해야되는 상황이다.....</font>
+
+<font color ="#0000FF">* 그 특정 itab 선언해서 만들어보기</font>
+DATA : BEGIN OF ls_master,
+         carrid   TYPE scarr-carrid,
+         currcode TYPE scarr-currcode,
+       END OF ls_master,
+
+       lt_master LIKE TABLE OF ls_master.
+
+<font color ="#0000FF">*이 lt_master 에 있는 레코드의 carrid 필드와 매치되는</font>
+<font color ="#0000FF">* 레코드를 SPFLI 에서 select 해야되는 상황이다...</font>
+<font color ="#0000FF">* 그렇다면 lt_master 의 레코드를 만들어 놔보자고..</font>
+
+ls_master-carrid   = 'DL'.
+ls_master-currcode = 'USD'.
+
+APPEND ls_master TO lt_master.
+CLEAR  ls_master.
+
+ls_master-carrid   = 'AA'.
+ls_master-currcode = 'USD'.
+
+APPEND ls_master TO lt_master.
+CLEAR  ls_master.
+
+ls_master-carrid   = 'LH'.
+ls_master-currcode = 'EUR'.
+
+APPEND ls_master TO lt_master.
+CLEAR  ls_master.
+
+SORT lt_master BY carrid.
+DELETE ADJACENT DUPLICATES FROM lt_master COMPARING carrid.
+
+IF lt_master IS NOT INITIAL.
+
+  SELECT carrid connid airpfrom airpto
+    INTO CORRESPONDING FIELDS OF TABLE gt_data
+    FROM spfli
+<font color ="#0000FF">*   INNER JOIN lt_master AS b 불가능</font>
+     FOR ALL ENTRIES IN lt_master " AS b 가 불가능하다.. 그 뜻은 itab의 필드는 select 못한다는뜻
+<font color ="#0000FF">*      ON a~carrid = b~carrid.  불가능</font>
+   WHERE carrid = lt_master-carrid.
+
+ENDIF.
+
+<font color ="#0000FF">*IF lt_master IS NOT INITIAL.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  SELECT a~carrid a~connid a~airpfrom a~airpto</font>
+<font color ="#0000FF">*    INTO CORRESPONDING FIELDS OF TABLE gt_data</font>
+<font color ="#0000FF">*    FROM spfli AS a</font>
+<font color ="#0000FF">*    LEFT OUTER JOIN sflight AS b "OUTER JOIN table 과는 for all entries 불가</font>
+<font color ="#0000FF">*      ON a~carrid = b~carrid</font>
+<font color ="#0000FF">*     AND a~connid = b~connid</font>
+<font color ="#0000FF">**   INNER JOIN lt_master AS b 불가능</font>
+<font color ="#0000FF">*     FOR ALL ENTRIES IN lt_master " AS b 가 불가능하다.. 그 뜻은 itab의 필드는 select 못한다는뜻</font>
+<font color ="#0000FF">**      ON a~carrid = b~carrid.  불가능</font>
+<font color ="#0000FF">*   WHERE b~carrid = lt_master-carrid.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*ENDIF.</font>
+
+<font color ="#0000FF">** 개발을 진행하다 보니.. ALV 출력용 itab gt_data 기준으로 sflight 를</font>
+<font color ="#0000FF">* select 할 상황 발생..</font>
+<font color ="#0000FF">* for all entries 로 붙어야 하는데 이것을 사용하기 위해서는 중복제거가 필수..</font>
+<font color ="#0000FF">* 중복제거 하다가는 gt_data 의 레코드가 손실이 될 위험이 생기므로..</font>
+<font color ="#0000FF">* for all entries 로 JOIN 할 필드의 레코드만 따로 빼서 써야 함</font>
+<font color ="#0000FF">* 여기서는 gt_data 의 carrid, connid 기준으로 sflight 를 select 할 상황이라 하자고..</font>
+
+<font color ="#0000FF">* for all entries 로 JOIN 에 사용할 itab을 선언</font>
+DATA : BEGIN OF ls_key,
+         carrid TYPE sflight-carrid,
+         connid TYPE sflight-connid,
+       END OF ls_key,
+       lt_key     LIKE TABLE OF ls_key,
+
+       lt_sflight TYPE TABLE OF sflight.
+
+<font color ="#0000FF">* carrid, connid 필드 레코드만 lt_key 로 보냄</font>
+MOVE-CORRESPONDING gt_data TO lt_key.
+
+SORT lt_key BY carrid connid.
+DELETE ADJACENT DUPLICATES FROM lt_key COMPARING carrid connid.
+
+IF lt_key IS NOT INITIAL.
+
+  SELECT carrid connid fldate price currency
+    INTO CORRESPONDING FIELDS OF TABLE lt_sflight
+    FROM sflight
+     FOR ALL ENTRIES IN lt_key
+   WHERE carrid   = lt_key-carrid
+     AND connid   = lt_key-connid
+     AND currency = 'USD'.
+
+ENDIF.
+
+<font color ="#0000FF">* 문자열 결합</font>
+<font color ="#0000FF">* concatenate 구문</font>
+<font color ="#0000FF">* 사용가능한 타입 : C, N, D, T, String 만 가능</font>
+
+DATA : lv_char(20)    VALUE 'CODE1 CLASS 5   ',
+       lv_numc(4)     TYPE n VALUE '7',
+       lv_int         TYPE i VALUE 70,
+       lv_result(100).
+
+CONCATENATE lv_numc lv_char sy-datum sy-uzeit INTO lv_result.
+<font color ="#0000FF">*SEPARATED BY space. "각 문자열을 space로 구분지을 수 있다.</font>
+<font color ="#0000FF">*SEPARATED BY ', '. "각 문자열을 , 로 구분지울 수 있다.</font>
+<font color ="#0000FF">*RESPECTING BLANKS. "내가 넣는 공백을 다 인정해 달라는 뜻</font>
+"이게 없으면 'CODE1 CLASS 5   ' 뒤에 공백을 그냥 무시해서 conatenate를 한다.
+
+WRITE : lv_result, /.
+
+
+lv_result = lv_numc && lv_char && sy-datum && sy-uzeit.
+WRITE : lv_result, /.
+CLEAR lv_result.
+
+
+<font color ="#0000FF">* 문자열과 변수를 혼합해서 결합</font>
+lv_result = |코드1    | && lv_numc && lv_char && sy-datum && sy-uzeit.
+"하나의 캐릭터를 말하는 것임.
+"여기는 공백을 다 받아줌 쓰기 싫으면 RESPECTING BLANKS이거를 써도됨
+
+WRITE : lv_result, /.
+CLEAR lv_result.
+
+lv_result = |오늘 날짜는 { sy-datum } 이고 지금 시간은 { sy-uzeit }| &&
+            |여기는 구로디지털|.
+"중간 중간에 변수를 쓸 수 있다.
+WRITE : lv_result, /.
+CLEAR lv_result.
+
+
+<font color ="#0000FF">* 변수에 write 했을 경우 효과</font>
+<font color ="#0000FF">* 숫자를 write 했을 경우</font>
+
+CLEAR lv_result.
+lv_int = 154200.
+
+WRITE lv_int TO lv_result. "천단위 콤마를 자동으로 찍어주면 좋겠어
+
+
+<font color ="#0000FF">* 공백제거 : CONDENSE 문자열의 맨앞과 맨 뒤의 모든 공백 제거</font>
+<font color ="#0000FF">* 공백제거 : CONDENSE lv_result NO-GAPS 문자열의 모든 공백 제거</font>
+
+CONDENSE lv_result.
+
+WRITE : lv_result, /.
+
+
+CLEAR lv_result.
+
+WRITE sy-datum TO lv_result. "날짜형식으로 날짜가 나옴.
+"사용자마다 날짜형식은 다름, 설정에 따라!!
+
+WRITE : lv_result, /.
+
+DATA : lv_qty         TYPE menge_d VALUE '232344.000',
+       lv_price       TYPE dmbtr   VALUE '3829.00',
+       lv_unit        TYPE meins   VALUE 'EA',
+       lv_cuky        TYPE waers   VALUE 'KRW',
+       lv_result2(20).
+
+<font color ="#0000FF">* 수량 output type</font>
+<font color ="#0000FF">*WRITE lv_qty TO lv_result2 UNIT 'EA'.</font>
+WRITE lv_qty TO lv_result2 UNIT lv_unit.
+
+CONDENSE lv_result2.
+WRITE : lv_result2,/.
+
+<font color ="#0000FF">* 금액 output type</font>
+CLEAR lv_result2.
+
+<font color ="#0000FF">*WRITE lv_price TO lv_result2 CURRENCY 'KRW'.</font>
+WRITE lv_price TO lv_result2 CURRENCY lv_cuky.
+
+CONDENSE lv_result2.
+WRITE : lv_result2,/.
+
+<font color ="#0000FF">*문자열 대체 : replace 처음 만난 문자만 대체</font>
+<font color ="#0000FF">*문자열 대체 : replace all ~ : 처음 만난 문자만 대체</font>
+
+DATA : lv_str(20) VALUE 'ABCDEDLDLLDETEWD'.
+
+<font color ="#0000FF">* lv_str 에서 'D'를 '*'로 대체하기</font>
+<font color ="#0000FF">* 맨 처음에 만나는 거 하나만</font>
+REPLACE 'D' IN lv_str WITH '*'.
+
+WRITE : lv_str, /.
+
+<font color ="#0000FF">* lv_str 에서 'D'를 모두 '*'로 대체하기</font>
+REPLACE ALL OCCURRENCES OF 'D' IN lv_str WITH '*'.
+
+WRITE : lv_str, /.
+
+DATA : lv_char2(50).
+
+lv_char2 = '여기는 구로디지털  ''sap code'' 입니다.'.
+lv_char2 = |여기는 구로디지털  'sap code' 입니다.|.
+
+WRITE lv_char2.
+
+<font color ="#0000FF">******************ITAB 을 이용한 Group by 및 SUM, COUNT ***********************</font>
+<font color ="#0000FF">* GROUP BY 의 효과 : 중복제거의 효과가 있음</font>
+
+DATA : ls_flight TYPE sflight,
+       lt_flight LIKE TABLE OF ls_flight,
+
+       BEGIN OF ls_sum,
+         carrid TYPE sflight-carrid,
+         connid TYPE sflight-connid,
+         price  TYPE sflight-price,
+       END OF ls_sum,
+
+       lt_sum LIKE TABLE OF ls_sum,
+
+       BEGIN OF ls_total_sum,
+         price TYPE sflight-price,
+       END OF ls_total_sum,
+
+       lt_total_sum LIKE TABLE OF ls_total_sum,
+
+       BEGIN OF ls_count,
+         carrid TYPE sflight-carrid,
+         cnt    TYPE i,
+       END OF ls_count,
+
+       lt_count LIKE TABLE OF ls_count,
+
+       BEGIN OF ls_total_count,
+         cnt TYPE i,
+       END OF ls_total_count,
+
+       lt_total_count LIKE TABLE OF ls_total_count,
+
+       BEGIN OF ls_dup,
+         carrid TYPE sflight-carrid,
+         connid TYPE sflight-connid,
+       END OF ls_dup,
+
+       lt_dup LIKE TABLE OF ls_dup.
+
+SELECT *
+  INTO CORRESPONDING FIELDS OF TABLE lt_flight
+  FROM sflight
+ ORDER BY carrid connid fldate.
+
+<font color ="#0000FF">* CARRID, CONNID 별로 Price의 SUM 을 ITAB에 구성하기</font>
+LOOP AT lt_flight INTO ls_flight.
+
+<font color ="#0000FF">* price 를 전체 SUM 해보자고</font>
+<font color ="#0000FF">* 효과</font>
+<font color ="#0000FF">*    SELECT SUM( price )</font>
+<font color ="#0000FF">*      FROM sflight.</font>
+  ls_total_sum-price = ls_flight-price.
+
+  COLLECT ls_total_sum INTO lt_total_sum.
+
+<font color ="#0000FF">* CARRID, CONNID 별 price 를 SUM 해보자고..</font>
+<font color ="#0000FF">* 효과</font>
+<font color ="#0000FF">*    SELECT carrid connid SUM( price )</font>
+<font color ="#0000FF">*      FROM sflight</font>
+<font color ="#0000FF">*     GROUP BY carrid connid</font>
+
+  ls_sum-carrid = ls_flight-carrid.
+  ls_sum-connid = ls_flight-connid.
+  ls_sum-price  = ls_flight-price.
+
+  COLLECT ls_sum INTO lt_sum.
+
+<font color ="#0000FF">* 레코드 전체를 COUNT 해보자고</font>
+<font color ="#0000FF">* 효과</font>
+<font color ="#0000FF">*    SELECT COUNT( * )</font>
+<font color ="#0000FF">*      FROM sflight.</font>
+
+  ls_total_count-cnt = 1.
+
+  COLLECT ls_total_count INTO lt_total_count.
+
+<font color ="#0000FF">* CARRID 별 COUNT를 해보자고..</font>
+<font color ="#0000FF">* 효과</font>
+<font color ="#0000FF">*    SELECT carrid COUNT( * )</font>
+<font color ="#0000FF">*      FROM sflight</font>
+<font color ="#0000FF">*     GROUP BY carrid.</font>
+
+  ls_count-carrid = ls_flight-carrid.
+  ls_count-cnt    = 1.
+
+  COLLECT ls_count INTO lt_count.
+
+<font color ="#0000FF">* CARRID, CONNID 기준으로 중복제거 해보자고..</font>
+<font color ="#0000FF">* 효과</font>
+<font color ="#0000FF">*    SELECT carrid connid</font>
+<font color ="#0000FF">*      FROM sflight</font>
+<font color ="#0000FF">*     GROUP BY carrid connid.</font>
+
+  ls_dup-carrid = ls_flight-carrid.
+  ls_dup-connid = ls_flight-connid.
+
+  COLLECT ls_dup INTO lt_dup.
+
+ENDLOOP.
+
+cl_demo_output=&gt;display( lt_dup ).
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

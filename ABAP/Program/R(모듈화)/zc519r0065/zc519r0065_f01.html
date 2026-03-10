@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0065_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0065_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0065_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0065_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_schedule</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_schedule .
+
+<font color ="#0000FF">*  RANGES : lr_carrid FOR spfli-carrid. "헤더가 있는 레인지</font>
+  DATA : lr_carrid TYPE RANGE OF spfli-carrid, "헤더가 없는 레인지
+         ls_carrid LIKE LINE  OF lr_carrid.  "WITH HEADER LINE
+  "메소드에서는 헤더있는 인터널테이블을 못 씀.
+
+  REFRESH : gt_spfli, lr_carrid.
+
+  IF pa_carr IS NOT INITIAL.
+
+<font color ="#0000FF">*    lr_carrid-sign   = 'I'.</font>
+<font color ="#0000FF">*    lr_carrid-option = 'EQ'.</font>
+<font color ="#0000FF">*    lr_carrid-low    = pa_carr.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    APPEND lr_carrid.</font>
+
+    ls_carrid-sign   = 'I'.
+    ls_carrid-option = 'EQ'.
+    ls_carrid-low    = pa_carr.
+
+    APPEND ls_carrid TO lr_carrid.
+    CLEAR  ls_carrid.
+
+  ENDIF.
+
+  SELECT carrid   connid countryfr countryto
+         airpfrom airpto deptime   arrtime
+    INTO CORRESPONDING FIELDS OF TABLE gt_spfli
+    FROM spfli
+   WHERE carrid IN lr_carrid.
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001.
+    LEAVE LIST-PROCESSING.
+
+  ENDIF.
+
+  IF 'AA' IN lr_carrid.
+
+    MESSAGE s000 WITH '있다'.
+
+  ENDIF.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
