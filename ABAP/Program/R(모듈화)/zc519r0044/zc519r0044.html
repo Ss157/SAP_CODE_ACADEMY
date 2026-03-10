@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0044</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0044</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] DML Training 2</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0044</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0044 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF gs_class,
+         class  TYPE zc519t0002-class,
+         cl_num TYPE zc519t0002-cl_num,
+         name   TYPE zc519t0002-name,
+         phone  TYPE zc519t0002-phone,
+         gender TYPE zc519t0002-gender,
+       END OF gs_class,
+
+       gt_class LIKE TABLE OF gs_class.
+
+DEFINE _clear.
+
+  CLEAR   &1.
+  REFRESH &2.
+
+END-OF-DEFINITION.
+<font color ="#0000FF">**********************************************************************</font>
+
+_clear gs_class gt_class.
+
+SELECT class cl_num name phone gender
+  INTO CORRESPONDING FIELDS OF TABLE gt_class
+  FROM zc519t0002.
+
+IF sy-subrc &lt;&gt; 0.
+
+  MESSAGE s001.
+  LEAVE LIST-PROCESSING.
+
+ENDIF.
+
+<font color ="#0000FF">*PERFORM update_data.</font>
+
+PERFORM delete_data.
+
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form update_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM update_data .
+
+<font color ="#0000FF">* gt_class 에 있는 phone을 '11111111'로 바꾸기</font>
+  DATA : ls_update TYPE zc519t0002,
+         lt_update TYPE TABLE OF zc519t0002,
+         lv_tabix  TYPE sy-tabix.
+
+  _clear ls_update lt_update.
+  CLEAR  lv_tabix.
+
+  LOOP AT gt_class INTO gs_class.
+
+    lv_tabix = sy-tabix.
+
+    gs_class-phone = '11111111'.
+
+    MODIFY gt_class FROM gs_class INDEX lv_tabix
+    TRANSPORTING phone.
+
+  ENDLOOP.
+
+  MOVE-CORRESPONDING gt_class TO lt_update.
+
+  IF lt_update IS NOT INITIAL.
+
+    UPDATE zc519t0002 FROM TABLE lt_update.
+
+<font color ="#0000FF">* IF sy-subrc = 0</font>
+    IF sy-dbcnt &gt; 0.
+
+      COMMIT WORK AND WAIT.
+      MESSAGE s002.
+
+    ELSE.
+
+      ROLLBACK WORK.
+      MESSAGE s004 DISPLAY LIKE 'E'.
+
+    ENDIF.
+
+  ENDIF.
+
+<font color ="#0000FF">*CL5 03의 name을 '로제'로 업데이트하기</font>
+
+  UPDATE zc519t0002 SET name = '로제'
+   WHERE class  = 'CL5'
+     AND cl_num = '03'.
+
+<font color ="#0000FF">* IF sy-subrc = 0</font>
+  IF sy-dbcnt &gt; 0.
+    COMMIT WORK AND WAIT.
+    MESSAGE s002.
+  ELSE.
+    ROLLBACK WORK.
+    MESSAGE s004 DISPLAY LIKE 'E'.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form delete_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM delete_data .
+
+  DATA : ls_del TYPE zc519t0002,
+         lt_del TYPE TABLE OF zc519t0002.
+
+  _clear ls_del lt_del.
+
+<font color ="#0000FF">*  DELETE FROM zc519t0002</font>
+<font color ="#0000FF">*   WHERE gender = 'F'.</font>
+
+  LOOP AT lt_del INTO ls_del WHERE gender = 'F'.
+
+    MOVE-CORRESPONDING gs_class TO ls_del.
+
+    APPEND ls_del TO lt_del.
+    CLEAR  ls_del.
+
+  ENDLOOP.
+
+  IF lt_del IS NOT INITIAL.
+
+    DELETE zc519t0002 FROM TABLE lt_del.
+
+<font color ="#0000FF">*  IF sy-subrc = 0.</font>
+    IF sy-dbcnt &gt; 0.
+      COMMIT WORK AND WAIT.
+      MESSAGE s003.
+    ELSE.
+      ROLLBACK WORK.
+      MESSAGE s004.
+    ENDIF.
+
+  ENDIF.
+
+  DELETE FROM zc519t0002
+   WHERE class  = 'CL5'
+     AND cl_num = '05'.
+
+  IF sy-subrc = 0.
+    COMMIT WORK AND WAIT.
+    MESSAGE s003.
+  ELSE.
+    ROLLBACK WORK.
+    MESSAGE s004.
+  ENDIF.
+
+ENDFORM.
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*001   Data not found</font>
+<font color ="#0000FF">*002   Data was saved successfully</font>
+<font color ="#0000FF">*003   Data was deleted successfully</font>
+<font color ="#0000FF">*004   Data was not saved successfully</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

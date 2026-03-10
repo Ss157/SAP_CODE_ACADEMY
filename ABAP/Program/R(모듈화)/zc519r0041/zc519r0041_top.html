@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0041_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0041_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0041_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZC519R0041_TOP                           - Report ZC519R0041</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0041 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF gs_account,
+         belnr TYPE bseg-belnr,
+         buzei TYPE bseg-buzei,
+         blart TYPE bkpf-blart,
+         budat TYPE bkpf-budat,
+         bschl TYPE bseg-bschl,
+         koart TYPE bseg-koart,
+         gsber TYPE bseg-gsber,
+         shkzg TYPE bseg-shkzg,
+         hkont TYPE bseg-hkont,
+         dmbtr TYPE bseg-dmbtr,
+         pswsl TYPE bseg-pswsl,
+       END OF gs_account,
+
+       gt_account LIKE TABLE OF gs_account,
+
+       gv_okcode  TYPE sy-ucomm.
+
+DATA : gcl_container TYPE REF TO cl_gui_docking_container,
+       gcl_grid      TYPE REF TO cl_gui_alv_grid,
+       gs_fcat       TYPE lvc_s_fcat,
+       gt_fcat       TYPE lvc_t_fcat,
+       gs_layout     TYPE lvc_s_layo,
+       gs_variant    TYPE disvariant,
+       gs_stable     TYPE lvc_s_stbl.
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*DATA : gcl_container_pop  TYPE REF TO cl_gui_custom_container,</font>
+<font color ="#0000FF">*       gcl_grid_pop       TYPE REF TO cl_gui_alv_grid,</font>
+<font color ="#0000FF">*       gt_fcat_pop        TYPE lvc_t_fcat,</font>
+<font color ="#0000FF">*       gcl_container_pop2 TYPE REF TO cl_gui_custom_container,</font>
+<font color ="#0000FF">*       gcl_grid_pop2      TYPE REF TO cl_gui_alv_grid,</font>
+<font color ="#0000FF">*       gt_fcat_pop2       TYPE lvc_t_fcat.</font>
+
+DEFINE _clear.
+
+  CLEAR   : &1.
+  REFRESH : &2.
+
+END-OF-DEFINITION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

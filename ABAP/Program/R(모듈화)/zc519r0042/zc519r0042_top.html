@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0042_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0042_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0042_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZC519R0042_TOP                           - Report ZC519R0042</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0042 MESSAGE-ID zc519m.
+
+TABLES : scarr, sflight.
+
+DATA : BEGIN OF gs_airline,
+         carrid    TYPE scarr-carrid,
+         carrname  TYPE scarr-carrname,
+         connid    TYPE sflight-connid,
+         fldate    TYPE sflight-fldate,
+         planetype TYPE sflight-planetype,
+         price     TYPE sflight-price,
+         currency  TYPE sflight-currency,
+         url       TYPE scarr-url,
+       END OF gs_airline,
+
+       gt_airline LIKE TABLE OF gs_airline,
+
+       BEGIN OF gs_saplane,
+         planetype TYPE saplane-planetype,
+         seatsmax  TYPE saplane-seatsmax,
+         tankcap   TYPE saplane-tankcap,
+         cap_unit  TYPE saplane-cap_unit,
+         weight    TYPE saplane-weight,
+         wei_unit  TYPE saplane-wei_unit,
+       END OF gs_saplane,
+
+       gt_saplane LIKE TABLE OF gs_saplane,
+
+       BEGIN OF gs_sbook,
+         carrid     TYPE sbook-carrid,
+         connid     TYPE sbook-connid,
+         fldate     TYPE sbook-fldate,
+         bookid     TYPE sbook-bookid,
+         customid   TYPE sbook-customid,
+         custtype   TYPE sbook-custtype,
+         luggweight TYPE sbook-luggweight,
+         wunit      TYPE sbook-wunit,
+         loccuram   TYPE sbook-loccuram,
+         loccurkey  TYPE sbook-loccurkey,
+       END OF gs_sbook,
+
+       gt_sbook  LIKE TABLE OF gs_sbook,
+
+       gv_okcode TYPE sy-ucomm.
+
+DATA : gcl_container TYPE REF TO cl_gui_docking_container,
+       gcl_grid      TYPE REF TO cl_gui_alv_grid,
+       gs_fcat       TYPE lvc_s_fcat,
+       gt_fcat       TYPE lvc_t_fcat,
+       gs_layout     TYPE lvc_s_layo,
+       gs_variant    TYPE disvariant,
+       gs_stable     TYPE lvc_s_stbl.
+
+DATA : gcl_container_pop  TYPE REF TO cl_gui_custom_container,
+       gcl_grid_pop       TYPE REF TO cl_gui_alv_grid,
+       gt_fcat_pop        TYPE lvc_t_fcat,
+       gcl_container_pop2 TYPE REF TO cl_gui_custom_container,
+       gcl_grid_pop2      TYPE REF TO cl_gui_alv_grid,
+       gt_fcat_pop2       TYPE lvc_t_fcat.
+
+DEFINE _clear.
+
+  CLEAR   : &1.
+  REFRESH : &2.
+
+END-OF-DEFINITION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0043</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0043</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] DML Training</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0043</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0043 MESSAGE-ID zc519m.
+
+DATA : ls_data TYPE zc519t0002,
+       lt_data TYPE TABLE OF zc519t0002.
+
+DEFINE _clear.
+
+  CLEAR   &1.
+  REFRESH &2.
+
+END-OF-DEFINITION.
+
+<font color ="#0000FF">******************************Insert**********************************</font>
+
+<font color ="#0000FF">*_clear ls_data lt_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*ls_data-class  = '005'.</font>
+<font color ="#0000FF">*ls_data-cl_num = '01'.</font>
+<font color ="#0000FF">*ls_data-name   = '필릭스'.</font>
+<font color ="#0000FF">*ls_data-phone  = '01011112222'.</font>
+<font color ="#0000FF">*ls_data-gender = 'M'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">** 스트럭처를 통해서 1개의 Record 생성하기</font>
+<font color ="#0000FF">*INSERT zc519t0002 FROM ls_data.</font>
+<font color ="#0000FF">**INSERT INTO zc519t0002 VALUES ls_data.</font>
+<font color ="#0000FF">*COMMIT WORK AND WAIT.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">** ITAB을 통해서 1개 이상의 레코드를 생성할 때</font>
+<font color ="#0000FF">*ls_data-class  = '005'.</font>
+<font color ="#0000FF">*ls_data-cl_num = '02'.</font>
+<font color ="#0000FF">*ls_data-name   = '윈터'.</font>
+<font color ="#0000FF">*ls_data-phone  = '01011118888'.</font>
+<font color ="#0000FF">*ls_data-gender = 'F'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*APPEND ls_data TO lt_data.</font>
+<font color ="#0000FF">*CLEAR  ls_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*ls_data-class  = '005'.</font>
+<font color ="#0000FF">*ls_data-cl_num = '03'.</font>
+<font color ="#0000FF">*ls_data-name   = '지수'.</font>
+<font color ="#0000FF">*ls_data-phone  = '01011119999'.</font>
+<font color ="#0000FF">*ls_data-gender = 'F'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*APPEND ls_data TO lt_data.</font>
+<font color ="#0000FF">*CLEAR  ls_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*MODIFY zc519t0002 FROM TABLE lt_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**PK 중복을 허용할 때 사용하는 구문 : ITAB을 이용해서 INSERT 할 때만 사용</font>
+<font color ="#0000FF">**INSERT zc519t0002 FROM TABLE lt_data ACCEPTING DUPLICATE KEYS. " 여기에서는 된다.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*COMMIT WORK AND WAIT.</font>
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">********************************Update********************************</font>
+
+<font color ="#0000FF">*ls_data-class  = '005'.</font>
+<font color ="#0000FF">*ls_data-cl_num = '03'.</font>
+<font color ="#0000FF">*ls_data-name   = '변사또'.</font>
+<font color ="#0000FF">*ls_data-phone  = '01088889999'.</font>
+<font color ="#0000FF">*ls_data-gender = 'F'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*APPEND ls_data TO lt_data.</font>
+<font color ="#0000FF">*CLEAR  ls_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**UPDATE zc519t0002 FROM ls_data.</font>
+<font color ="#0000FF">**UPDATE zc519t0002 FROM TABLE lt_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*UPDATE zc519t0002 SET phone = '07011111111'</font>
+<font color ="#0000FF">*                      name  = '에스파'</font>
+<font color ="#0000FF">*WHERE cl_num IN ('02', '03').</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*COMMIT WORK AND WAIT.</font>
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">********************************Delete********************************</font>
+
+<font color ="#0000FF">** ITAB or Structure 이용해서 Delete 할 때는 PK 필드에만 값을 주면 됨</font>
+<font color ="#0000FF">*ls_data-class  = '005'.</font>
+<font color ="#0000FF">*ls_data-cl_num = '02'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*APPEND ls_data TO lt_data.</font>
+<font color ="#0000FF">*CLEAR  ls_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*ls_data-class  = '005'.</font>
+<font color ="#0000FF">*ls_data-cl_num = '03'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*APPEND ls_data TO lt_data.</font>
+<font color ="#0000FF">*CLEAR  ls_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*DELETE zc519t0002 FROM TABLE lt_data.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**FROM 뒤에는 인터널 테이블이 아니라 db 테이블이 와야 한다.</font>
+<font color ="#0000FF">*DELETE FROM zc519t0002</font>
+<font color ="#0000FF">* WHERE cl_num = '00'. "NUMC 2 자리 이므로</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*COMMIT WORK AND WAIT.</font>
+
+<font color ="#0000FF">**********************************************************************</font>
+
+DELETE zc519t0002 FROM TABLE lt_data.
+
+_clear ls_data lt_data.
+
+ls_data-class  = 'CL5'.
+ls_data-cl_num = '01'.
+ls_data-name   = '카리나'.
+ls_data-phone  = '01011112222'.
+ls_data-gender = 'F'.
+
+APPEND ls_data TO lt_data.
+CLEAR  ls_data.
+
+
+ls_data-class  = 'CL5'.
+ls_data-cl_num = '02'.
+ls_data-name   = '윈터'.
+ls_data-phone  = '01065324878'.
+ls_data-gender = 'F'.
+
+APPEND ls_data TO lt_data.
+CLEAR  ls_data.
+
+ls_data-class  = 'CL5'.
+ls_data-cl_num = '03'.
+ls_data-name   = '지수'.
+ls_data-phone  = '01054546565'.
+ls_data-gender = 'F'.
+
+APPEND ls_data TO lt_data.
+CLEAR  ls_data.
+
+ls_data-class  = 'CL5'.
+ls_data-cl_num = '04'.
+ls_data-name   = '변의주'.
+ls_data-phone  = '01077778888'.
+ls_data-gender = 'M'.
+
+APPEND ls_data TO lt_data.
+CLEAR  ls_data.
+
+ls_data-class  = 'CL5'.
+ls_data-cl_num = '05'.
+ls_data-name   = '차은우'.
+ls_data-phone  = '01077778888'.
+ls_data-gender = 'M'.
+
+APPEND ls_data TO lt_data.
+CLEAR  ls_data.
+
+INSERT zc519t0002 FROM TABLE lt_data.
+
+COMMIT WORK AND WAIT.
+
+<font color ="#0000FF">**********************************************************************</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
