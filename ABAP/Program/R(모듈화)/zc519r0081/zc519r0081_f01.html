@@ -1,0 +1,280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0081_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0081_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0081_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0081_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_purchase</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_purchase .
+
+  REFRESH gt_purchase.
+
+  SELECT ebeln, ebelp, bukrs, bsart, batxt,
+         matnr, txz01, menge, meins
+    INTO CORRESPONDING FIELDS OF TABLE @gt_purchase
+    FROM ZC519cds0014( p_bukrs = @pa_bukrs ).
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_product</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_product .
+
+<font color ="#0000FF">* ADBC 관련</font>
+  DATA : lcl_conn    TYPE REF TO cl_sql_connection, "DB Connection 맺을 Class
+         lcl_sql     TYPE REF TO cl_sql_statement,  "SQL 을 실행할 Class
+         lcl_result  TYPE REF TO cl_sql_result_set, "Select 결과를 받아올 Class
+         lr_data     TYPE REF TO data,              "DB에 가서 결과를 받아올 Data
+         lx_sql_exec TYPE REF TO cx_root,           "Exception 처리할 Class
+         lv_sql      TYPE string,                   "SQL을 담을 변수
+         lv_msg      TYPE string.                   "Exception 발생시 메시지 받을 변수
+
+  _clear gs_prodcut gt_product.
+
+  TRY.
+<font color ="#0000FF">* DB Connection을 얻어온다.</font>
+<font color ="#0000FF">* Connection 이름은 Tcode : DB01(혹은 DBCO) 가서 DB Connection 버튼 클릭해서 Connection 이름 확인한다</font>
+      lcl_conn = cl_sql_connection=&gt;get_connection( ).
+
+<font color ="#0000FF">* SQL 실행할 객체를 생성하면서 Connection 을 넘겨줌으로써 어디서</font>
+<font color ="#0000FF">* SQL을 실행할지 알려준다</font>
+      CREATE OBJECT lcl_sql
+        EXPORTING
+          con_ref = lcl_conn.
+
+<font color ="#0000FF">* DB에서 실행할 SQL을 작성한다</font>
+      lv_sql = | SELECT a.AUFNR, a.AUART, a.BUKRS, a.WERKS, | &&
+               |        c.MATNR, b.GSTRP, c.POSNR, b.GLTRP, | &&
+               |        b.RSNUM, c.PSMNG, c.AMEIN           | &&
+               |   FROM AUFK      AS a                      | &&
+               |  INNER JOIN AFKO AS b                      | &&
+               |     ON A.AUFNR = B.AUFNR                   | &&
+               |  INNER JOIN AFPO AS c                      | &&
+               |     ON B.AUFNR = C.AUFNR                   | &&
+               |  WHERE a.MANDT = '{ sy-mandt }'            | &&
+               |    AND a.BUKRS = '{ pa_bukrs }'            |.
+
+<font color ="#0000FF">* lcl_sql 이 주어진 SQL을 실행하고 결과를 lcl_result 에게 줘라~~~</font>
+      lcl_result = lcl_sql-&gt;execute_query( lv_sql ). "SQL 실행
+
+<font color ="#0000FF">* 결과를 받아오기 위해서 ITAB 과 DB 의 결과를 대신 받아올 객체와 동기화 시킴</font>
+      GET REFERENCE OF gt_product INTO lr_data.
+
+<font color ="#0000FF">* 결과 받으러 lr_data 객체가 들어감 : ITAB 형식으로 받기 위해서 set_param_table 메소드 호출함</font>
+      lcl_result-&gt;set_param_table( lr_data ).
+
+<font color ="#0000FF">* lr_data가 데이터를 받았다며? 그럼 gt_sflight에게 돌려줘</font>
+      lcl_result-&gt;next_package( ).
+<font color ="#0000FF">* DB 에서 볼일 다 봤으니 이제 끝내자</font>
+      lcl_result-&gt;close( ).
+
+    CATCH cx_sql_exception INTO lx_sql_exec. "에러 발생시 처리하는곳
+
+      lv_msg = lx_sql_exec-&gt;get_text( ). "에러 메시지 받는다
+
+      MESSAGE s000 WITH lv_msg DISPLAY LIKE 'E'.
+      EXIT.
+  ENDTRY.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_layout .
+
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat_1 USING pv_key
+                       pv_field
+                       pv_text
+                       pv_ref_table
+                       pv_ref_field.
+
+  gs_fcat = VALUE #(
+                     key       = pv_key
+                     fieldname = pv_field
+                     coltext   = pv_text
+                     ref_table = pv_ref_table
+                     ref_field = pv_ref_field
+                   ).
+
+  CASE pv_field.
+    WHEN 'MENGE'.
+      gs_fcat = VALUE #( BASE gs_fcat
+                         qfieldname = 'MEINS'
+                       ).
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat_1.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid_1-&gt;refresh_table_display
+    EXPORTING
+      is_stable = gs_stable.
+
+  CALL METHOD gcl_grid_2-&gt;refresh_table_display
+    EXPORTING
+      is_stable = gs_stable.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv_1</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv_1 .
+
+  CREATE OBJECT gcl_container_1
+    EXPORTING
+      container_name = 'GCL_CONTAINER_1'.
+
+  CREATE OBJECT gcl_grid_1
+    EXPORTING
+      i_parent = gcl_container_1.
+
+  gs_variant-report = sy-repid.
+  gs_variant-handle = '1ST'.
+
+  CALL METHOD gcl_grid_1-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_purchase
+      it_fieldcatalog = gt_fcat_1.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat_2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat_2  USING pv_key
+                        pv_field
+                        pv_text
+                        pv_ref_table
+                        pv_ref_field.
+
+  gs_fcat = VALUE #(
+                     key       = pv_key
+                     fieldname = pv_field
+                     coltext   = pv_text
+                     ref_table = pv_ref_table
+                     ref_field = pv_ref_field
+                   ).
+
+  CASE pv_field.
+    WHEN 'PSMNG'.
+      gs_fcat = VALUE #( BASE gs_fcat
+                         qfieldname = 'AMEIN'
+                       ).
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat_2.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv_2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv_2 .
+
+  CREATE OBJECT gcl_container_2
+    EXPORTING
+      container_name = 'GCL_CONTAINER_2'.
+
+  CREATE OBJECT gcl_grid_2
+    EXPORTING
+      i_parent = gcl_container_2.
+
+  gs_variant-report = sy-repid.
+  gs_variant-handle = '2ND'.
+
+  CALL METHOD gcl_grid_2-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_product
+      it_fieldcatalog = gt_fcat_2.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
