@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0055_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0055_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0054_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZC519R0055_TOP                           - Report ZC519R0055</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0055 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF gs_mat.
+         include structure <a href ="zc519t0037/dictionary-zc519t0037.html">zc519t0037</a>.
+DATA :   mtbez TYPE t134t-mtbez,
+         style TYPE lvc_t_styl,
+         mark,
+       END OF gs_mat,
+
+       gt_mat     LIKE TABLE OF gs_mat,
+       gt_mat_del LIKE TABLE OF gs_mat,
+
+       gv_okcode  TYPE sy-ucomm.
+
+DATA : gcl_container TYPE REF TO cl_gui_docking_container,
+       gcl_grid      TYPE REF TO cl_gui_alv_grid,
+       gs_fcat       TYPE lvc_s_fcat,
+       gt_fcat       TYPE lvc_t_fcat,
+       gs_layout     TYPE lvc_S_layo,
+       gs_variant    TYPE disvariant,
+       gs_stable     TYPE lvc_s_stbl,
+       gs_row        TYPE lvc_s_row,
+       gt_row        TYPE lvc_t_row,
+       gt_exclude    TYPE  ui_functions.
+
+DEFINE _clear.
+
+  CLEAR   &1.
+  REFRESH &2.
+
+END-OF-DEFINITION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
