@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0058</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0058</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] ALV with Double click, Hotspot 실습</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0058</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+include <a href ="zc519r0058_top.html">zc519r0058_top</a>.    " Global Data
+
+include <a href ="zc519r0058_s01.html">zc519r0058_s01</a>.  " Selection Screen
+include <a href ="zc519r0058_c01.html">zc519r0058_c01</a>.  " Local Class
+include <a href ="zc519r0058_o01.html">zc519r0058_o01</a>.  " PBO-Modules
+include <a href ="zc519r0058_i01.html">zc519r0058_i01</a>.  " PAI-Modules
+include <a href ="zc519r0058_f01.html">zc519r0058_f01</a>.  " FORM-Routines
+
+INITIALIZATION.
+  PERFORM init_param.
+
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM modify_screen.
+
+AT SELECTION-SCREEN ON pa_gjahr.
+  PERFORM check_param.
+
+START-OF-SELECTION.
+  PERFORM get_account.
+  PERFORM set_style.
+
+  CLEAR gv_sub.
+
+  IMPORT iv_sub = gv_sub FROM MEMORY ID 'CL5'.
+
+  IF gv_sub IS INITIAL.
+
+    CALL SCREEN '0100'.
+
+  ELSE.
+
+    EXPORT et_account = gt_account TO MEMORY ID 'CL5'.
+
+  ENDIF.
+
+<font color ="#0000FF">*GUI Texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T0100 --&gt; [C5] ALV with Double click, Hotspot 실습</font>
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* F01 Input Fiscal Year</font>
+<font color ="#0000FF">* F02 Refresh</font>
+<font color ="#0000FF">* T01 Selection Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_BUKRS D       .</font>
+<font color ="#0000FF">* PA_GJAHR D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*000   & & & &</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

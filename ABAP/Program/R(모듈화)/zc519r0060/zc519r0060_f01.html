@@ -1,0 +1,670 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0060_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0060_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0060_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0060_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init .
+
+  pa_werks = '0001'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form check_param</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM check_param .
+
+  DATA : lv_werks TYPE t001w-werks.
+
+  CLEAR  lv_werks.
+
+  IF pa_werks IS INITIAL.
+
+    MESSAGE s000 WITH TEXT-f01 DISPLAY LIKE 'E'.
+    STOP.
+
+  ENDIF.
+
+  SELECT SINGLE werks
+    INTO lv_werks
+    FROM t001w
+   WHERE werks = pa_werks.
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s000 WITH TEXT-f02 DISPLAY LIKE 'E'.
+    STOP.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_bill_func</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_bill_func .
+
+<font color ="#0000FF">* call function을 해서 bill 값을 얻는 구문이다.</font>
+<font color ="#0000FF">* 여기에서 lt_bill을 선언하는 이유는 function에서의 et_data와</font>
+<font color ="#0000FF">* 받는 인터널 테이블의 구조가 완전히 일치해야하기 때문이다.</font>
+<font color ="#0000FF">* 따라서 style, mark 등이 있는 gt_bill은 function에서 쓰일 수가 없다.</font>
+  DATA : lt_bill     TYPE TABLE OF zc519t0040,
+         lv_msg(100),
+         lv_code.
+
+  CLEAR   : lv_msg,  lv_code.
+  REFRESH : lt_bill, gt_bill_del.
+  _clear    gs_bill  gt_bill.
+
+  call function <a href ="zc519fm_get_bill/zc519fm_get_bill.html">'ZC519FM_GET_BILL'</a>
+    EXPORTING
+      iv_werks = pa_werks
+    IMPORTING
+      ev_msg   = lv_msg
+      ev_code  = lv_code
+    TABLES
+      et_data  = lt_bill.
+
+<font color ="#0000FF">* 일반적인 상황이라면 아래와 같이 lv_code를 판단하여</font>
+<font color ="#0000FF">* 'E'라면 Data not found라는 메세지와 stop을 해야 하지만</font>
+<font color ="#0000FF">* 지금은 CRUD ALV를 만들고 있기 때문에 아래 로직은 제외하였다.</font>
+<font color ="#0000FF">* 원래 초기 생각에는 메세지는 출력해도 괜찮지 않을까라고 생각했지만</font>
+<font color ="#0000FF">* 메세지를 출력하니 save 과정에서 save 완료 메세지를 아래 메세지가</font>
+<font color ="#0000FF">* 덮어씌우는 상황이 발생하여 메세지도 제외하는 것이 좋겠다고 생각했다.</font>
+<font color ="#0000FF">*  IF lv_code = 'E'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    MESSAGE s000 WITH lv_msg.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  ENDIF.</font>
+
+  MOVE-CORRESPONDING lt_bill TO gt_bill.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_bill_meth</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_bill_meth .
+
+<font color ="#0000FF">* call method를 해서 bill 값을 얻는 구문이다.</font>
+<font color ="#0000FF">* 여기에서 lt_bill을 선언하는 이유는 method에서의 et_data와</font>
+<font color ="#0000FF">* 받는 인터널 테이블의 구조가 완전히 일치해야하기 때문이다.</font>
+<font color ="#0000FF">* 따라서 style, mark 등이 있는 gt_bill은 method에서 쓰일 수가 없다.</font>
+  DATA : lt_bill     TYPE TABLE OF zc519t0040,
+         lcl_bill    TYPE REF TO zc519cl003,
+         lv_code,
+         lv_msg(100).
+
+  CLEAR   : lv_msg,  lv_code, lcl_bill.
+  REFRESH : lt_bill, gt_bill_del.
+  _clear    gs_bill  gt_bill.
+
+  IF lcl_bill IS NOT BOUND.
+
+    CREATE OBJECT lcl_bill.
+
+  ENDIF.
+
+  CALL METHOD lcl_bill-&gt;get_bill
+    EXPORTING
+      iv_werks = pa_werks
+    IMPORTING
+      ev_msg   = lv_msg
+      ev_code  = lv_code
+    CHANGING
+      et_data  = lt_bill.
+
+<font color ="#0000FF">* 일반적인 상황이라면 아래와 같이 lv_code를 판단하여</font>
+<font color ="#0000FF">* 'E'라면 Data not found라는 메세지와 stop을 해야 하지만</font>
+<font color ="#0000FF">* 지금은 CRUD ALV를 만들고 있기 때문에 아래 로직은 제외하였다.</font>
+<font color ="#0000FF">* call function에서의 상황이 같다.</font>
+<font color ="#0000FF">*  IF lv_code = 'E'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    MESSAGE s000 WITH lv_msg.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  ENDIF.</font>
+
+  MOVE-CORRESPONDING lt_bill TO gt_bill.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_style</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_style .
+
+<font color ="#0000FF">* DB에서 select해서 가져온 데이터의 PK를 edit 불가능하게 만드는 폼이다.</font>
+<font color ="#0000FF">* 여기에서 PK 중 werks를 쓰지 않은 이유는 werks는 이미 파라미터로</font>
+<font color ="#0000FF">* 입력을 받은 상태로 해당 값으로 고정시킬 것이기 때문에</font>
+<font color ="#0000FF">* 애초에 필드 카탈로그에서 edit 불가능하게 만들었기 때문이다.</font>
+<font color ="#0000FF">* 또한, 아래 구문에서 PK 필드는 알파벳 순으로 append 해야한다.</font>
+  DATA : lv_tabix TYPE sy-tabix,
+         ls_style TYPE lvc_s_styl.
+
+  CLEAR  lv_tabix.
+
+  LOOP AT gt_bill INTO gs_bill.
+
+    lv_tabix = sy-tabix.
+
+    _clear ls_style gs_bill-style.
+
+    ls_style-fieldname = 'MATNR'.
+    ls_style-style     = cl_gui_alv_grid=&gt;mc_style_disabled.
+
+    APPEND ls_style TO gs_bill-style.
+    CLEAR  ls_style.
+
+    ls_style-fieldname = 'STLAL'.
+    ls_style-style     = cl_gui_alv_grid=&gt;mc_style_disabled.
+
+    APPEND ls_style TO gs_bill-style.
+    CLEAR  ls_style.
+
+    ls_style-fieldname = 'STLAN'.
+    ls_style-style     = cl_gui_alv_grid=&gt;mc_style_disabled.
+
+    APPEND ls_style TO gs_bill-style.
+    CLEAR  ls_style.
+
+    ls_style-fieldname = 'STLNR'.
+    ls_style-style     = cl_gui_alv_grid=&gt;mc_style_disabled.
+
+    APPEND ls_style TO gs_bill-style.
+    CLEAR  ls_style.
+
+    MODIFY gt_bill FROM gs_bill INDEX lv_tabix
+    TRANSPORTING style.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_layout .
+
+<font color ="#0000FF">* 아래 구문에서 stylefname에 값을 주지 않으면 gt_bill의 style은</font>
+<font color ="#0000FF">* 적용되지 않는다.</font>
+<font color ="#0000FF">* 또, 파라미터로 입력받은 werks는 edit 기능을 주지 않는다.</font>
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+  gs_layout-stylefname = 'STYLE'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+  PERFORM make_fcat USING :
+  'X'  'MATNR'  ' '  'ZC519T0040'  ' '  'X',
+  'X'  'WERKS'  ' '  'ZC519T0040'  ' '  ' ',
+  'X'  'STLAN'  ' '  'ZC519T0040'  ' '  'X',
+  'X'  'STLNR'  ' '  'ZC519T0040'  ' '  'X',
+  'X'  'STLAL'  ' '  'ZC519T0040'  ' '  'X',
+  ' '  'LOSBS'  ' '  'ZC519T0040'  ' '  'X',
+  ' '  'LOSVN'  ' '  'ZC519T0040'  ' '  'X',
+  ' '  'BMEIN'  ' '  'ZC519T0040'  ' '  'X'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat  USING pv_key
+                      pv_field
+                      pv_text
+                      pv_ref_table
+                      pv_ref_field
+                      pv_edit.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+  gs_fcat-edit      = pv_edit.
+
+  CASE pv_field.
+    WHEN 'LOSBS' OR 'LOSVN'.
+      gs_fcat-qfieldname = 'BMEIN'.
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form exclude_toolbar</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM exclude_toolbar .
+
+<font color ="#0000FF">* 아래 구문을 사용하여 edit 기능을 씀으로써 늘어난 alv toolbar의</font>
+<font color ="#0000FF">* 버튼을 지정하여 exclude 할 수 있다.</font>
+  APPEND cl_gui_alv_grid=&gt;mc_fc_loc_cut        TO gt_exclude.
+  APPEND cl_gui_alv_grid=&gt;mc_mb_paste          TO gt_exclude.
+  APPEND cl_gui_alv_grid=&gt;mc_fc_loc_undo       TO gt_exclude.
+  APPEND cl_gui_alv_grid=&gt;mc_fc_loc_append_row TO gt_exclude.
+  APPEND cl_gui_alv_grid=&gt;mc_fc_loc_insert_row TO gt_exclude.
+  APPEND cl_gui_alv_grid=&gt;mc_fc_loc_delete_row TO gt_exclude.
+  APPEND cl_gui_alv_grid=&gt;mc_fc_loc_copy_row   TO gt_exclude.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv .
+
+<font color ="#0000FF">* set handler를 이용해야 직접 정의한 local 메소드들이 활성화된다.</font>
+<font color ="#0000FF">* register_edit_event 메소드를 사용해야만 data_changed_finished 이벤트가</font>
+<font color ="#0000FF">* 활성화된다.</font>
+  CREATE OBJECT gcl_container
+    EXPORTING
+      side      = gcl_container-&gt;dock_at_left
+      extension = 5000.
+
+  CREATE OBJECT gcl_grid
+    EXPORTING
+      i_parent = gcl_container.
+
+  gs_variant-report = sy-repid.
+
+  SET HANDLER : lcl_event_handler=&gt;handle_toolbar          FOR gcl_grid,
+                lcl_event_handler=&gt;handle_user_command     FOR gcl_grid,
+                lcl_event_handler=&gt;handle_changed_finished FOR gcl_grid.
+
+  CALL METHOD gcl_grid-&gt;register_edit_event
+    EXPORTING
+      i_event_id = gcl_grid-&gt;mc_evt_modified.
+
+  CALL METHOD gcl_grid-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant           = gs_variant
+      i_save               = 'A'
+      i_default            = 'X'
+      is_layout            = gs_layout
+      it_toolbar_excluding = gt_exclude
+    CHANGING
+      it_outtab            = gt_bill
+      it_fieldcatalog      = gt_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid-&gt;refresh_table_display
+    EXPORTING
+      is_stable      = gs_stable
+      i_soft_refresh = space.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form save_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM save_data .
+
+<font color ="#0000FF">* delete, modify일 때와 마찬가지로 테이블과 구조가 완전히 같아야</font>
+<font color ="#0000FF">* 하기 때문에 lt_save, lt_del 등을 선언하였다.</font>
+  DATA : ls_save   TYPE zc519t0040,
+         lt_save   LIKE TABLE OF ls_save,
+         lt_del    LIKE TABLE OF ls_save,
+         lv_commit.
+
+  _clear  ls_save lt_save.
+  CLEAR   lv_commit.
+  REFRESH lt_del.
+
+<font color ="#0000FF">* 사용자가 입력 후 엔터를 치지 않는 것을 대비해서</font>
+<font color ="#0000FF">* 해당 메소드를 호출하였다.</font>
+  CALL METHOD gcl_grid-&gt;check_changed_data.
+
+<font color ="#0000FF">* 만약 gt_bill_del이 비어있지 않으면 삭제 대상이 있다는 것이니</font>
+<font color ="#0000FF">* 구조가 똑같은 lt_del로 데이터를 옮긴 후 삭제를 진행하도록 한다.</font>
+  IF gt_bill_del IS NOT INITIAL.
+
+    MOVE-CORRESPONDING gt_bill_del TO lt_del.
+
+    IF lt_del IS NOT INITIAL.
+
+      DELETE zc519t0040 FROM TABLE lt_del.
+
+      IF sy-dbcnt &gt; 0.
+
+        lv_commit = 'X'.
+
+      ENDIF.
+
+    ENDIF.
+
+  ENDIF.
+
+<font color ="#0000FF">* 삭제 대상만 따로 모아져 있던 delete와는 달리</font>
+<font color ="#0000FF">* modify 대상은 mark가 표시되어 있기 때문에</font>
+<font color ="#0000FF">* mark가 표시되어 있다는 조건을 걸어 loop를 돌렸다.</font>
+<font color ="#0000FF">* erdat가 초기값인지에 따라서 타임스탬프관리를 해주었다.</font>
+  LOOP AT gt_bill INTO gs_bill WHERE mark = 'X'.
+
+    MOVE-CORRESPONDING gs_bill TO ls_save.
+
+    IF ls_save-erdat IS INITIAL.
+
+      ls_save-erdat = sy-datum.
+      ls_save-erzet = sy-uzeit.
+      ls_save-ernam = sy-uname.
+
+    ELSE.
+
+      ls_save-aedat = sy-datum.
+      ls_save-aezet = sy-uzeit.
+      ls_save-aenam = sy-uname.
+
+    ENDIF.
+
+    APPEND ls_save TO lt_save.
+    CLEAR  ls_save.
+
+  ENDLOOP.
+
+  IF lt_save IS NOT INITIAL.
+
+    MODIFY zc519t0040 FROM TABLE lt_save.
+
+    IF sy-dbcnt &gt; 0.
+
+      lv_commit = 'X'.
+
+    ENDIF.
+
+  ENDIF.
+
+<font color ="#0000FF">* lv_commit이 X라는 것은 delete나 modify를 했다는</font>
+<font color ="#0000FF">* 의미이기 때문에 commit을 해주었고 lv_commit이</font>
+<font color ="#0000FF">* X인지 아닌지에 따라서 메세지 처리를 해주었다.</font>
+  IF lv_commit = 'X'.
+
+    COMMIT WORK AND WAIT.
+
+    REFRESH gt_bill_del.
+    PERFORM reset_mark.
+
+    MESSAGE s002.
+
+  ELSE.
+
+    MESSAGE s000 WITH TEXT-f05 DISPLAY LIKE 'W'.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form reset_mark</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM reset_mark .
+
+<font color ="#0000FF">* commit이 된 후 mark 표시가 그대로 남아있으면 다음 save 때</font>
+<font color ="#0000FF">* 데이터 변경이 없었는데도 또 다시 save를 할 수 있기 때문에</font>
+<font color ="#0000FF">* mark 표시를 clear를 해주었다.</font>
+  DATA : lv_tabix TYPE sy-tabix.
+
+  CLEAR  lv_tabix.
+
+  LOOP AT gt_bill INTO gs_bill WHERE mark = 'X'.
+
+    lv_tabix = sy-tabix.
+
+    CLEAR gs_bill-mark.
+
+    MODIFY gt_bill FROM gs_bill INDEX lv_tabix
+    TRANSPORTING mark.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_toolbar</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_OBJECT_&gt;MT_TOOLBAR</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_toolbar  USING pt_toolbar TYPE ttb_button.
+
+<font color ="#0000FF">* alv toolbar에 버튼을 추가하는 로직이다.</font>
+<font color ="#0000FF">* 아래 로직에서 clear할 때 pt_toolbar는 하지 않아야 한다.</font>
+<font color ="#0000FF">* pt_toolbar를 clear를 하면 기존 toolbar에 있는 버튼이 다 사라지게 된다.</font>
+<font color ="#0000FF">* text는 다국어 지원을 위해서 text element에서 값을 정의하였다.</font>
+  DATA : ls_toolbar TYPE stb_button.
+
+  CLEAR  ls_toolbar.
+
+  ls_toolbar-function  = 'CREATE'.
+  ls_toolbar-icon      = icon_insert_row.
+  ls_toolbar-butn_type = 0.
+  ls_toolbar-quickinfo = 'Create'.
+  ls_toolbar-text      = TEXT-f03.
+
+  APPEND ls_toolbar TO pt_toolbar.
+  CLEAR  ls_toolbar.
+
+  ls_toolbar-function  = 'DELETE'.
+  ls_toolbar-icon      = icon_delete_row.
+  ls_toolbar-butn_type = 0.
+  ls_toolbar-quickinfo = 'Delete'.
+  ls_toolbar-text      = TEXT-f04.
+
+  APPEND ls_toolbar TO pt_toolbar.
+  CLEAR  ls_toolbar.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_user_command</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_UCOMM</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_user_command  USING pv_ucomm TYPE sy-ucomm.
+
+<font color ="#0000FF">* alv toolbar에 생성한 버튼을 눌렀을 때하는 동작을 정의해 놓은 구문이다.</font>
+  CASE pv_ucomm.
+    WHEN 'CREATE'.
+      PERFORM create_row.
+      PERFORM refresh_grid.
+
+    WHEN 'DELETE'.
+      PERFORM delete_row.
+
+  ENDCASE.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_row</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_row .
+
+<font color ="#0000FF">* 열을 생성했다는 것은 insert 대상이라는 것이기 때문에</font>
+<font color ="#0000FF">* mark에 X 표시를 하고 werks는 입력 필수인 파라미터이기 때문에</font>
+<font color ="#0000FF">* 아래처럼 값을 주었다.</font>
+  CLEAR gs_bill.
+
+  gs_bill-werks = pa_werks.
+  gs_bill-mark  = 'X'.
+
+  APPEND gs_bill TO gt_bill.
+  CLEAR  gs_bill.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form delete_row</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM delete_row .
+
+<font color ="#0000FF">* 선택한 행의 인덱스를 gt_row에 담는다.</font>
+<font color ="#0000FF">* 만약에 gt_row가 비어 있다면 아무것도 선택하지 않은 거니까 exit한다.</font>
+<font color ="#0000FF">* gt_row를 내림차순으로 정렬하여 여러 행을 선택했을 때, 삭제하는 과정에서</font>
+<font color ="#0000FF">* 인덱스가 변하면서 생기는 문제를 방지한다.</font>
+<font color ="#0000FF">* 그 후 gt_row에 있는 값을 loop 문을 이용하여 gs_row에 넣고</font>
+<font color ="#0000FF">* gs_row의 인덱스를 이용해서 gt_bill의 값을 읽는다.</font>
+<font color ="#0000FF">* 읽는 데에 성공했다면 인터널테이블의 해당 값을 지우고</font>
+<font color ="#0000FF">* gt_bill_del에 값을 넣는다.</font>
+  _clear gs_row gt_row.
+
+  CALL METHOD gcl_grid-&gt;get_selected_rows
+    IMPORTING
+      et_index_rows = gt_row.
+
+  IF gt_row IS INITIAL.
+
+    MESSAGE s000 WITH TEXT-t05 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  SORT gt_row BY index DESCENDING.
+
+  LOOP AT gt_row INTO gs_row.
+
+    READ TABLE gt_bill INTO gs_bill INDEX gs_row-index.
+
+    IF sy-subrc = 0.
+
+      APPEND gs_bill TO gt_bill_del.
+      CLEAR  gs_bill.
+
+      DELETE gt_bill INDEX gs_row-index.
+
+    ENDIF.
+
+  ENDLOOP.
+
+  PERFORM refresh_grid.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_data_changed_finished</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_changed_finished USING pv_modified
+                                   pt_modi TYPE lvc_t_modi.
+
+<font color ="#0000FF">* 변경된 행의 정보를 얻기 위해서 loop문을 사용했다.</font>
+<font color ="#0000FF">* ls_modi-row_id를 사용해서 해당 행에 mark에 X표시를 했다.</font>
+  DATA : ls_modi TYPE lvc_s_modi.
+
+  CLEAR  ls_modi.
+
+  IF pv_modified IS INITIAL.
+    EXIT.
+  ENDIF.
+
+  LOOP AT pt_modi INTO ls_modi.
+
+    READ TABLE gt_bill INTO gs_bill INDEX ls_modi-row_id.
+
+    IF sy-subrc &lt;&gt; 0.
+      CONTINUE.
+    ENDIF.
+
+    gs_bill-mark = 'X'.
+
+    MODIFY gt_bill FROM gs_bill INDEX ls_modi-row_id
+    TRANSPORTING mark.
+
+  ENDLOOP.
+
+  PERFORM refresh_grid.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

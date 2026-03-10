@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0059_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0059_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0059_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZC519R0059_TOP                           - Report ZC519R0059</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0059 MESSAGE-ID zc519m.
+
+TABLES : scarr.
+
+CONTROLS gc_tab TYPE TABSTRIP.
+
+DATA : gv_pressed TYPE sy-ucomm VALUE 'SECOND', "어떤 탭이 눌렸ㄴ느지 저장할 변수
+       gv_screen  TYPE sy-dynnr, "탭별로 스크린을 가져야 해서 맵핑해야 하니까 만들어놓음
+       gv_okcode  TYPE sy-ucomm,
+       gv_sub.
+
+DATA : gt_scarr TYPE TABLE OF scarr,
+       gt_spfli TYPE TABLE OF spfli.
+
+DATA : gcl_container_1 TYPE REF TO cl_gui_custom_container,
+       gcl_container_2 TYPE REF TO cl_gui_custom_container,
+       gcl_grid_1      TYPE REF TO cl_gui_alv_grid,
+       gcl_grid_2      TYPE REF TO cl_gui_alv_grid,
+       gs_fcat         TYPE lvc_s_fcat,
+       gt_fcat_1       TYPE lvc_t_fcat,
+       gt_fcat_2       TYPE lvc_t_fcat,
+       gs_layout       TYPE lvc_s_layo,
+       gs_variant      TYPE disvariant. "alv 형태에 관련해서 저장하는 거
+"stable은 지금 refresh를 하지 않기 때문에 현재 정의하지 않음.
+
+DEFINE _clear.
+
+  CLEAR   &1.
+  REFRESH &2.
+
+END-OF-DEFINITION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
