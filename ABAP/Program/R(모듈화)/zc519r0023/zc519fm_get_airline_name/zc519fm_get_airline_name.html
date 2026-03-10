@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519FM_GET_AIRLINE_NAME</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for function: ZC519FM_GET_AIRLINE_NAME</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] Get Airline Name</b></font>
+<hr>
+<pre width="100">
+FUNCTION zc519fm_get_airline_name.
+<font color ="#0000FF">*"----------------------------------------------------------------------</font>
+<font color ="#0000FF">*"*"Local Interface:</font>
+<font color ="#0000FF">*"  IMPORTING</font>
+<font color ="#0000FF">*"     REFERENCE(PI_CARRID) TYPE  S_CARR_ID</font>
+<font color ="#0000FF">*"  EXPORTING</font>
+<font color ="#0000FF">*"     REFERENCE(PE_CARRNAME) TYPE  S_CARRNAME</font>
+<font color ="#0000FF">*"     REFERENCE(PE_CODE) TYPE  C</font>
+<font color ="#0000FF">*"     REFERENCE(PE_MSG) TYPE  CHAR100</font>
+<font color ="#0000FF">*"----------------------------------------------------------------------</font>
+
+<font color ="#0000FF">*       <a href ="global-zc519fm_get_airline_name.html">Global data declarations</a></font>
+
+  SELECT SINGLE carrname
+    INTO pe_carrname
+    FROM scarr
+   WHERE carrid = pi_carrid.
+
+  IF sy-subrc &lt;&gt; 0.
+
+    pe_code = 'E'.
+    pe_msg  = 'Data Not Found'.
+
+  ELSE.
+
+    pe_code = 'S'.
+    " 성공했을 때 msg는 안 써도 된다.
+
+  ENDIF.
+
+ENDFUNCTION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

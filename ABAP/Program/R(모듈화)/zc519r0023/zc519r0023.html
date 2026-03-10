@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0023</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0023</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] Call Function</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0023</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0023 MESSAGE-ID zc519m.
+
+<font color ="#0000FF">**********************************************************************</font>
+PARAMETERS : pa_carr TYPE scarr-carrid.
+<font color ="#0000FF">**********************************************************************</font>
+
+START-OF-SELECTION.
+  PERFORM get_air_name.
+
+<font color ="#0000FF">**********************************************************************</font>
+FORM get_air_name .
+
+  DATA : lv_name     TYPE scarr-carrname,
+         lv_code,
+         lv_msg(100).
+
+  call function <a href ="zc519fm_get_airline_name/zc519fm_get_airline_name.html">'ZC519FM_GET_AIRLINE_NAME'</a>
+    EXPORTING
+      pi_carrid   = pa_carr
+    IMPORTING "이 부분은 항상 optional이다.
+      pe_carrname = lv_name
+      pe_code     = lv_code
+      pe_msg      = lv_msg.
+
+  IF lv_code = 'E'.
+
+    MESSAGE s000 WITH lv_msg.
+    STOP.
+
+  ENDIF.
+
+  MESSAGE i000 WITH lv_name.
+
+ENDFORM.
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*000   & & & &</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
