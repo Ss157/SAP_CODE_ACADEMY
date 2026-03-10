@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0069</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0069</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] Dynamic Programming with Field-Symbol</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0069</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+include <a href ="zc519r0069_top.html">zc519r0069_top</a>.    " Global Data
+
+include <a href ="zc519r0069_s01.html">zc519r0069_s01</a>.  " Selection Screen
+<font color ="#0000FF">*INCLUDE zc519r0069_o01                          .  " PBO-Modules</font>
+<font color ="#0000FF">*INCLUDE zc519r0069_i01                          .  " PAI-Modules</font>
+include <a href ="zc519r0069_f01.html">zc519r0069_f01</a>.  " FORM-Routines
+
+START-OF-SELECTION.
+<font color ="#0000FF">*  PERFORM display_dynamic_list.</font>
+<font color ="#0000FF">*  PERFORM display_dynamic_list_2.</font>
+<font color ="#0000FF">*  PERFORM write_field_dynamic_itab.</font>
+<font color ="#0000FF">*  PERFORM write_field_dynamic_itab_2.</font>
+  PERFORM field_control_dynamic_itab.
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_TAB D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*000   & & & &</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

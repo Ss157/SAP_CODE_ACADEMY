@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0069_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0069_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0069_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0069_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_dynamic_list</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_dynamic_list .
+
+  DATA : lt_mara    TYPE TABLE OF mara,
+         lt_marc    TYPE TABLE OF marc,
+         lt_sflight TYPE TABLE OF sflight.
+
+  FIELD-SYMBOLS : &lt;lft_itab&gt; TYPE ANY TABLE.
+
+  REFRESH  : lt_mara, lt_marc, lt_sflight.
+  UNASSIGN : &lt;lft_itab&gt;.
+
+  CASE pa_tab.
+    WHEN 'MARA'.
+      ASSIGN lt_mara TO &lt;lft_itab&gt;.
+
+    WHEN 'MARC'.
+      ASSIGN lt_marc TO &lt;lft_itab&gt;.
+
+    WHEN 'SFLIGHT'.
+      ASSIGN lt_sflight TO &lt;lft_itab&gt;.
+
+  ENDCASE.
+
+  IF &lt;lft_itab&gt; IS NOT ASSIGNED.
+
+    MESSAGE s000 WITH 'Table name is wrong'
+    DISPLAY LIKE 'E'.
+    STOP.
+
+  ENDIF.
+
+  SELECT *
+    INTO CORRESPONDING FIELDS OF TABLE &lt;lft_itab&gt;
+    FROM (pa_tab).
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001.
+    STOP.
+
+  ENDIF.
+
+  cl_demo_output=&gt;display( &lt;lft_itab&gt; ).
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_dynamic_list_2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_dynamic_list_2 .
+
+  DATA : lt_mara    TYPE TABLE OF mara,
+         lt_marc    TYPE TABLE OF marc,
+         lt_sflight TYPE TABLE OF sflight,
+         lv_tabname TYPE dd03l-tabname.
+
+  FIELD-SYMBOLS : &lt;lft_itab&gt; TYPE ANY TABLE.
+
+  CLEAR    : lv_tabname.
+  REFRESH  : lt_mara, lt_marc, lt_sflight.
+  UNASSIGN : &lt;lft_itab&gt;.
+
+  CASE pa_tab.
+    WHEN 'MARA'.
+      lv_tabname = 'LT_MARA'.
+
+    WHEN 'MARC'.
+      lv_tabname = 'LT_MARC'.
+
+    WHEN 'SFLIGHT'.
+      lv_tabname = 'LT_SFLIGHT'.
+
+  ENDCASE.
+
+  ASSIGN (lv_tabname) TO &lt;lft_itab&gt;.
+
+<font color ="#0000FF">*  IF &lt;lft_itab&gt; IS NOT ASSIGNED. &lt;- 이 코드를 완전 강추</font>
+  IF sy-subrc &lt;&gt; 0. " subrc체크도 가능하다.
+
+    MESSAGE s000 WITH 'Table name is wrong'
+    DISPLAY LIKE 'E'.
+    STOP.
+
+  ENDIF.
+
+  SELECT *
+    INTO CORRESPONDING FIELDS OF TABLE &lt;lft_itab&gt;
+    FROM (pa_tab).
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001.
+    STOP.
+
+  ENDIF.
+
+  cl_demo_output=&gt;display( &lt;lft_itab&gt; ).
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form write_field_dynamic_itab</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM write_field_dynamic_itab .
+
+  DATA : lt_mara    TYPE TABLE OF mara,
+         lt_marc    TYPE TABLE OF marc,
+         lt_sflight TYPE TABLE OF sflight,
+         lv_tabname TYPE dd03l-tabname.
+
+  FIELD-SYMBOLS : &lt;lft_itab&gt;  TYPE ANY TABLE,
+                  &lt;lfs_itab&gt;  TYPE any,
+                  &lt;lfv_field&gt; TYPE any.
+
+  CLEAR    : lv_tabname.
+  REFRESH  : lt_mara, lt_marc, lt_sflight.
+  UNASSIGN : &lt;lft_itab&gt;, &lt;lfs_itab&gt;, &lt;lfv_field&gt;.
+
+  CASE pa_tab.
+    WHEN 'MARA'.
+      lv_tabname = 'LT_MARA'.
+
+    WHEN 'MARC'.
+      lv_tabname = 'LT_MARC'.
+
+    WHEN 'SFLIGHT'.
+      lv_tabname = 'LT_SFLIGHT'.
+
+  ENDCASE.
+
+  ASSIGN (lv_tabname) TO &lt;lft_itab&gt;.
+
+  IF &lt;lft_itab&gt; IS NOT ASSIGNED.
+
+    MESSAGE s000 WITH 'Table name is wrong'
+    DISPLAY LIKE 'E'.
+    STOP.
+
+  ENDIF.
+
+  SELECT *
+    INTO CORRESPONDING FIELDS OF TABLE &lt;lft_itab&gt;
+    FROM (pa_tab).
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001.
+    STOP.
+
+  ENDIF.
+
+<font color ="#0000FF">* 필드를 뽑기</font>
+  LOOP AT &lt;lft_itab&gt; ASSIGNING &lt;lfs_itab&gt;.
+
+    "UNASSIGN랑 IS ASSIGNED을 같이 써줘서
+    "필드 심볼이 잘못될 것을 막아줘야 한다.
+
+    UNASSIGN &lt;lfv_field&gt;. " assign전에 unassign을 반드시 하기
+    ASSIGN COMPONENT 1 OF STRUCTURE &lt;lfs_itab&gt; TO &lt;lfv_field&gt; .
+
+    IF &lt;lfv_field&gt; IS ASSIGNED.
+      WRITE : &lt;lfv_field&gt;. " 첫 번째 필드는 mandt일 것임.
+    ENDIF.
+
+    UNASSIGN &lt;lfv_field&gt;.
+    ASSIGN COMPONENT 2 OF STRUCTURE &lt;lfs_itab&gt; TO &lt;lfv_field&gt; .
+
+    IF &lt;lfv_field&gt; IS ASSIGNED.
+      WRITE : &lt;lfv_field&gt;.
+    ENDIF.
+
+    UNASSIGN &lt;lfv_field&gt;.
+    ASSIGN COMPONENT 3 OF STRUCTURE &lt;lfs_itab&gt; TO &lt;lfv_field&gt; .
+
+    IF &lt;lfv_field&gt; IS ASSIGNED.
+      WRITE : &lt;lfv_field&gt;.
+    ENDIF.
+
+    UNASSIGN &lt;lfv_field&gt;.
+    ASSIGN COMPONENT 4 OF STRUCTURE &lt;lfs_itab&gt; TO &lt;lfv_field&gt; .
+
+    IF &lt;lfv_field&gt; IS ASSIGNED.
+      WRITE : &lt;lfv_field&gt;,/.
+    ENDIF.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form write_field_dynamic_itab_2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM write_field_dynamic_itab_2 .
+
+  DATA : lt_sflight TYPE TABLE OF sflight,
+         lv_field   TYPE fieldname.
+
+  FIELD-SYMBOLS : &lt;lft_itab&gt; TYPE ANY TABLE,
+                  &lt;lfs_itab&gt; TYPE any,
+                  &lt;lfv_itab&gt; TYPE any.
+
+  REFRESH  : lt_sflight.
+  UNASSIGN : &lt;lft_itab&gt;, &lt;lfs_itab&gt;, &lt;lfv_itab&gt;.
+
+  ASSIGN ('LT_SFLIGHT') TO &lt;lft_itab&gt;.
+
+<font color ="#0000FF">* ASSIGNED 체크 필수</font>
+
+  lv_field = '*'.
+
+  SELECT (lv_field)
+    INTO CORRESPONDING FIELDS OF TABLE &lt;lft_itab&gt;
+    FROM sflight.
+
+<font color ="#0000FF">* sy-subrc 체크</font>
+
+<font color ="#0000FF">*  lv_field = 'CARRID'.</font>
+<font color ="#0000FF">**  READ TABLE &lt;lft_itab&gt; ASSIGNING &lt;lfs_itab&gt; WITH KEY ('CARRID') = 'AA'.</font>
+<font color ="#0000FF">*  READ TABLE &lt;lft_itab&gt; ASSIGNING &lt;lfs_itab&gt; WITH KEY (lv_field) = 'AA'.</font>
+
+  LOOP AT &lt;lft_itab&gt; ASSIGNING &lt;lfs_itab&gt;.
+
+    UNASSIGN &lt;lfv_itab&gt;.
+    ASSIGN COMPONENT 'CARRID' OF STRUCTURE &lt;lfs_itab&gt; TO &lt;lfv_itab&gt;.
+
+    IF &lt;lfv_itab&gt; IS ASSIGNED.
+
+      CASE &lt;lfv_itab&gt;.
+        WHEN 'JL'.
+          &lt;lfv_itab&gt; = 'KA'.
+
+      ENDCASE.
+
+    ENDIF.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form field_control_dynamic_itab</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM field_control_dynamic_itab .
+
+  " sql에 dynamic 쓰지 말기
+  " 보안에 굉장히 취약해짐.
+  "ex )
+<font color ="#0000FF">*condi = 'HSL01 &gt; 0'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*SELECT *</font>
+<font color ="#0000FF">*    INTO CORRESPONDING FIELDS OF TABLE lt_fagl</font>
+<font color ="#0000FF">*    FROM faglflext</font>
+<font color ="#0000FF">*   WHERE ryear = '2026'</font>
+<font color ="#0000FF">*     and (condi).</font>
+
+  DATA : lt_fagl   TYPE TABLE OF faglflext, "얘가 cds 뷰라서 워닝 뜸
+         "data definition 쓰라고 워닝 뜨는 거임
+         ls_fagl   LIKE LINE OF lt_fagl,
+         lv_field  TYPE fieldname,
+         lv_mon(2) TYPE n.
+
+  FIELD-SYMBOLS : &lt;lfv_field&gt; TYPE any.
+
+  " clear 했다 치고
+  SELECT *
+    INTO CORRESPONDING FIELDS OF TABLE lt_fagl
+    FROM faglflext
+   WHERE ryear = '2026'.
+
+<font color ="#0000FF">* HSL01 ~ HSL12 필드에 10,000을 더하는 로직</font>
+  LOOP AT lt_fagl INTO ls_fagl.
+
+<font color ="#0000FF">*  구성해야 할 필드명은 'HSL' + 01, 02, ~ 12</font>
+    DO 12 TIMES.
+
+      lv_mon = sy-index.
+
+      CLEAR    lv_field.
+      UNASSIGN &lt;lfv_field&gt;.
+
+<font color ="#0000FF">* ASSIGN 구문을 사용할때는 할당하고자 하는 변수(스트럭쳐,ITAB등) 의</font>
+<font color ="#0000FF">* FULL NAME 을 줘야 함</font>
+      CONCATENATE 'LS_FAGL-HSL' lv_mon INTO lv_field.
+      ASSIGN (lv_field) TO &lt;lfv_field&gt;.
+
+<font color ="#0000FF">* ASSIGN COMPONENT : STRUCTURE 에만 사용 가능</font>
+<font color ="#0000FF">*      CONCATENATE 'HSL' lv_mon INTO lv_field.</font>
+<font color ="#0000FF">*      ASSIGN COMPONENT lv_field OF STRUCTURE ls_fagl TO &lt;lfv_field&gt;.</font>
+
+      IF &lt;lfv_field&gt; IS ASSIGNED.
+        &lt;lfv_field&gt; = &lt;lfv_field&gt; + 10000.
+      ENDIF.
+
+    ENDDO.
+
+  ENDLOOP.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
