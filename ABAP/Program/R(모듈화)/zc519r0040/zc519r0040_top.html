@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0040_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0040_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0040_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZC519R0040_TOP                           - Report ZC519R0040</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0040 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF gs_mat,
+         matnr TYPE mara-matnr,
+         werks TYPE marc-werks,
+         maktx TYPE makt-maktx,
+         vpsta TYPE mara-vpsta,
+         mbrsh TYPE mara-mbrsh,
+         meins TYPE mara-meins,
+         ekgrp TYPE marc-ekgrp,
+         eknam TYPE t024-eknam,
+         dismm TYPE marc-dismm,
+         beskz TYPE marc-beskz,
+       END OF gs_mat,
+
+       gt_mat LIKE TABLE OF gs_mat,
+
+       BEGIN OF gs_mara,
+         matnr TYPE mara-matnr,
+         maktx TYPE makt-maktx,
+         mtart TYPE mara-mtart,
+         mtbez TYPE t134t-mtbez,
+         matkl TYPE mara-matkl,
+         wgbez TYPE t023t-wgbez,
+       END OF gs_mara,
+
+       gt_mara LIKE TABLE OF gs_mara,
+
+       BEGIN OF gs_marc,
+         matnr TYPE marc-matnr,
+         maktx TYPE makt-maktx,
+         werks TYPE marc-werks,
+         dispo TYPE marc-dispo,
+         dsnam TYPE t024d-dsnam,
+         disls TYPE marc-disls,
+       END OF gs_marc,
+
+       gt_marc   LIKE TABLE OF gs_marc,
+
+       gv_okcode TYPE sy-ucomm.
+
+DATA : gcl_container TYPE REF TO cl_gui_docking_container,
+       gcl_grid      TYPE REF TO cl_gui_alv_grid,
+       gs_fcat       TYPE lvc_s_fcat,
+       gt_fcat       TYPE lvc_t_fcat,
+       gs_layout     TYPE lvc_s_layo,
+       gs_variant    TYPE disvariant,
+       gs_stable     TYPE lvc_s_stbl.
+
+DATA : gcl_container_pop  TYPE REF TO cl_gui_custom_container,
+       gcl_grid_pop       TYPE REF TO cl_gui_alv_grid,
+       gt_fcat_pop        TYPE lvc_t_fcat,
+       gcl_container_pop2 TYPE REF TO cl_gui_custom_container,
+       gcl_grid_pop2      TYPE REF TO cl_gui_alv_grid,
+       gt_fcat_pop2       TYPE lvc_t_fcat.
+
+DEFINE _clear.
+
+  CLEAR   : &1.
+  REFRESH : &2.
+
+END-OF-DEFINITION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

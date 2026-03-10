@@ -1,0 +1,462 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0040_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0040_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0040_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0040_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init .
+
+  pa_werks = '0001'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_mat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_mat .
+
+  _clear gs_mat gt_mat.
+
+  SELECT a~matnr a~vpsta a~mbrsh a~meins
+         b~werks b~ekgrp b~dismm b~beskz
+         c~eknam
+         d~maktx
+    INTO CORRESPONDING FIELDS OF TABLE gt_mat
+    FROM mara      AS a
+   INNER JOIN marc AS b
+      ON a~matnr = b~matnr
+    LEFT OUTER JOIN t024 AS c
+      ON b~ekgrp = c~ekgrp
+    LEFT OUTER JOIN makt AS d
+      ON a~matnr = d~matnr
+     AND d~spras = sy-langu
+   WHERE b~werks = pa_werks.
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001.
+    LEAVE LIST-PROCESSING.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_layout .
+
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+  PERFORM make_fcat USING :
+          'X'  'MATNR'  ' '  'MARA'  ' ',
+          'X'  'WERKS'  ' '  'MARC'  ' ',
+          ' '  'MAKTX'  ' '  'MAKT'  ' ',
+          ' '  'VPSTA'  ' '  'MARA'  ' ',
+          ' '  'MBRSH'  ' '  'MARA'  ' ',
+          ' '  'MEINS'  ' '  'MARA'  ' ',
+          ' '  'EKGRP'  ' '  'MARC'  ' ',
+          ' '  'EKNAM'  ' '  'T024'  ' ',
+          ' '  'DISMM'  ' '  'MARC'  ' ',
+          ' '  'BESKZ'  ' '  'MARC'  ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat  USING pv_key
+                      pv_field
+                      pv_text
+                      pv_ref_table
+                      pv_ref_field.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+
+  CASE pv_field.
+    WHEN 'EKGRP'.
+      gs_fcat-emphasize = 'C300'.
+
+    WHEN 'WERKS'.
+      gs_fcat-hotspot   = 'X'.
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv .
+
+  CREATE OBJECT gcl_container
+    EXPORTING
+      side      = gcl_container-&gt;dock_at_left
+      extension = 5000.
+
+  CREATE OBJECT gcl_grid
+    EXPORTING
+      i_parent = gcl_container.
+
+  gs_variant-report = sy-repid.
+
+  SET HANDLER : lcl_event_handler=&gt;handle_double_click FOR gcl_grid,
+                lcl_event_handler=&gt;handle_hotspot      FOR gcl_grid.
+
+  CALL METHOD gcl_grid-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_mat
+      it_fieldcatalog = gt_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid-&gt;refresh_table_display
+    EXPORTING
+      is_stable      = gs_stable
+      i_soft_refresh = space.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_double_click</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_double_click USING ps_row TYPE lvc_s_row
+                               ps_col TYPE lvc_s_col.
+
+  IF ps_row-rowtype IS NOT INITIAL.
+    EXIT.
+  ENDIF.
+
+  READ TABLE gt_mat INTO gs_mat INDEX ps_row-index.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  CASE ps_col-fieldname.
+    WHEN 'MATNR'.
+
+      PERFORM get_mara USING gs_mat-matnr.
+
+      IF gt_mara IS INITIAL.
+        MESSAGE s000 WITH 'Material Information not found'.
+        EXIT.
+      ENDIF.
+
+      CALL SCREEN '0101' STARTING AT 20 3.
+
+  ENDCASE.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_hotspot</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_hotspot USING ps_row TYPE lvc_s_row
+                          ps_col TYPE lvc_s_col.
+
+  IF ps_row-rowtype IS NOT INITIAL.
+    EXIT.
+  ENDIF.
+
+  READ TABLE gt_mat INTO gs_mat INDEX ps_row-index.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  CASE ps_col-fieldname.
+    WHEN 'WERKS'.
+      PERFORM get_marc USING gs_mat-matnr
+                             gs_mat-werks.
+
+      IF gt_marc IS INITIAL.
+        MESSAGE s000 WITH 'Plant Data for Material is not found'.
+        EXIT.
+      ENDIF.
+
+      CALL SCREEN '0102' STARTING AT 20 3.
+
+  ENDCASE.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_mara</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_mara USING pv_matnr TYPE mara-matnr.
+
+  _clear gs_mara gt_mara.
+
+  SELECT a~matnr a~mtart a~matkl
+         b~maktx
+         c~mtbez
+         d~wgbez
+    INTO CORRESPONDING FIELDS OF TABLE gt_mara
+    FROM mara            AS a
+    LEFT OUTER JOIN makt AS b
+      ON a~matnr = b~matnr
+     AND b~spras = sy-langu
+    LEFT OUTER JOIN t134t AS c
+      ON a~mtart = c~mtart
+     AND c~spras = sy-langu
+    LEFT OUTER JOIN t023t AS d
+      ON a~matkl = d~matkl
+     AND d~spras = sy-langu
+   WHERE a~matnr = pv_matnr.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_popup1</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_popup1 .
+
+  PERFORM make_popup1 USING :
+          'X'  'MATNR'  ' '  'MARA'   ' ',
+          ' '  'MAKTX'  ' '  'MAKT'   ' ',
+          ' '  'MTART'  ' '  'MARA'   ' ',
+          ' '  'MTBEZ'  ' '  'T134T'  ' ',
+          ' '  'MATKL'  ' '  'MARA'   ' ',
+          ' '  'WGBEZ'  ' '  'T023T'  ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_popup1</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_popup1  USING pv_key
+                        pv_field
+                        pv_text
+                        pv_ref_table
+                        pv_ref_field.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+
+  APPEND gs_fcat TO gt_fcat_pop.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_pop1</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_pop1 .
+
+  CREATE OBJECT gcl_container_pop
+    EXPORTING
+      container_name = 'GCL_CONTAINER_POP'.
+
+  CREATE OBJECT gcl_grid_pop
+    EXPORTING
+      i_parent = gcl_container_pop.
+
+  gs_layout-no_toolbar = 'X'.
+
+  CALL METHOD gcl_grid_pop-&gt;set_table_for_first_display
+    EXPORTING
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_mara
+      it_fieldcatalog = gt_fcat_pop.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_marc</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; GS_MAT_MATNR</font>
+<font color ="#0000FF">*&      --&gt; GS_MAT_WERKS</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_marc  USING pv_matnr TYPE marc-matnr
+                     pv_werks TYPE marc-werks.
+
+  _clear gs_marc gt_marc.
+
+  SELECT a~matnr a~werks a~dispo a~disls
+         b~dsnam
+         c~maktx
+    INTO CORRESPONDING FIELDS OF TABLE gt_marc
+    FROM marc       AS a
+   INNER JOIN t024d AS b
+      ON a~dispo = b~dispo
+     AND a~werks = b~werks
+    LEFT OUTER JOIN makt AS c
+      ON a~matnr = c~matnr
+     AND c~spras = sy-langu
+   WHERE a~matnr = pv_matnr
+     AND a~werks = pv_werks.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_pop2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_pop2 .
+
+  PERFORM make_fcat_pop2 USING :
+          'X'  'MATNR'  ' '  'MARC'   ' ',
+          'X'  'WERKS'  ' '  'MARC'   ' ',
+          ' '  'MAKTX'  ' '  'MAKT'   ' ',
+          ' '  'DISPO'  ' '  'MARC'   ' ',
+          ' '  'DSNAM'  ' '  'T024D'  ' ',
+          ' '  'DISLS'  ' '  'MARC'   ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_pop2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_pop2 .
+
+  CREATE OBJECT gcl_container_pop2
+    EXPORTING
+      container_name = 'GCL_CONTAINER_POP2'.
+
+  CREATE OBJECT gcl_grid_pop2
+    EXPORTING
+      i_parent = gcl_container_pop2.
+
+  gs_layout-no_toolbar = 'X'.
+
+  CALL METHOD gcl_grid_pop2-&gt;set_table_for_first_display
+    EXPORTING
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_marc
+      it_fieldcatalog = gt_fcat_pop2.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat_pop2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat_pop2  USING pv_key
+                           pv_field
+                           pv_text
+                           pv_ref_table
+                           pv_ref_field.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+
+  APPEND gs_fcat TO gt_fcat_pop2.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

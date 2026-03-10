@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0039_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0039_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0039_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZC519R0039_TOP                           - Report ZC519R0039</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0039 MESSAGE-ID zc19m.
+
+TABLES : spfli.
+
+DATA : BEGIN OF gs_airline,
+         carrid   TYPE scarr-carrid,
+         connid   TYPE spfli-connid,
+         carrname TYPE scarr-carrname,
+         airpfrom TYPE spfli-airpfrom,
+         airpto   TYPE spfli-airpto,
+         distance TYPE spfli-distance,
+         distid   TYPE spfli-distid,
+       END OF gs_airline,
+
+       gt_airline LIKE TABLE OF gs_airline,
+
+       gs_flight  TYPE sflight,
+       gt_flight  LIKE TABLE OF gs_flight,
+
+       gv_okcode  TYPE sy-ucomm.
+
+<font color ="#0000FF">* ALV 관련</font>
+DATA : gcl_container TYPE REF TO cl_gui_docking_container,
+       gcl_grid      TYPE REF TO cl_gui_alv_grid,
+       gs_fcat       TYPE lvc_s_fcat,
+       gt_fcat       TYPE lvc_t_fcat,
+       gs_layout     TYPE lvc_s_layo,
+       gs_variant    TYPE disvariant,
+       gs_stable     TYPE lvc_s_stbl.
+
+<font color ="#0000FF">* popup 관련</font>
+DATA : gcl_container_pop TYPE REF TO cl_gui_custom_container,
+       gcl_grid_pop      TYPE REF TO cl_gui_alv_grid,
+       gt_fcat_pop       TYPE lvc_t_fcat.
+
+DEFINE _clear.
+
+  CLEAR   : &1.
+  REFRESH : &2.
+
+END-OF-DEFINITION.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
