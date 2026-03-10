@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0028_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0028_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0028_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0028_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init .
+
+  pa_bukrs = '0001'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_purchase_func</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_purchase_func .
+
+  DATA : lt_data     TYPE zc519tt006,
+         lv_code,
+         lv_msg(100).
+
+  CLEAR   : lv_code, lv_msg.
+  REFRESH : lt_data, gt_purchase.
+
+  call function <a href ="zc519fm_get_purchase/zc519fm_get_purchase.html">'ZC519FM_GET_PURCHASE'</a>
+    EXPORTING
+      pi_bukrs = pa_bukrs
+    IMPORTING
+      pe_code  = lv_code
+      pe_msg   = lv_msg
+    TABLES
+      pt_pursh = lt_data
+      it_ebeln = so_ebeln[].
+
+  IF lv_code = 'E'.
+
+    MESSAGE s000 WITH lv_msg.
+    STOP.
+
+  ENDIF.
+
+  MOVE-CORRESPONDING lt_data TO gt_purchase.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_purchase_met</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_purchase_met .
+
+  DATA : lcl_purchase TYPE REF TO zc519cl002,
+         lt_data      TYPE zc519tt006,
+         lv_code,
+         lv_msg(100).
+
+  CLEAR   : lv_code, lv_msg.
+  REFRESH : lt_data, gt_purchase.
+
+  IF lcl_purchase IS NOT BOUND.
+
+    CREATE OBJECT lcl_purchase.
+
+  ENDIF.
+
+  CALL METHOD lcl_purchase-&gt;get_purchase
+    EXPORTING
+      pi_bukrs = pa_bukrs
+      it_ebeln = so_ebeln[]
+    IMPORTING
+      pe_code  = lv_code
+      pe_msg   = lv_msg
+    CHANGING
+      pt_data  = lt_data.
+
+  IF lv_code = 'E'.
+
+    MESSAGE s000 WITH lv_msg.
+    STOP.
+
+  ENDIF.
+
+  MOVE-CORRESPONDING lt_data TO gt_purchase.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_purchase_form</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_purchase_form .
+
+  CLEAR   : gs_purchase.
+  REFRESH : gt_purchase.
+
+  SELECT a~ebeln a~bukrs a~bstyp a~bsart
+         b~ebelp b~matnr b~werks b~ktmng b~meins
+    INTO CORRESPONDING FIELDS OF TABLE gt_purchase
+    FROM ekko      AS a
+   INNER JOIN ekpo AS b
+      ON a~ebeln = b~ebeln
+   WHERE a~bukrs  = pa_bukrs
+     AND a~ebeln IN so_ebeln.
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001.
+    STOP.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_color</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_color .
+
+  DATA : lv_tabix TYPE sy-tabix,
+         ls_color TYPE lvc_s_scol.
+
+  CLEAR : lv_tabix, ls_color.
+
+  LOOP AT gt_purchase INTO gs_purchase.
+
+    lv_tabix = sy-tabix.
+
+    CLEAR   ls_color.
+    REFRESH gs_purchase-color.
+
+    IF gs_purchase-ktmng &lt;= 5000.
+
+      ls_color-fname     = 'KTMNG'.
+      ls_color-color-col = 3.
+      ls_color-color-int = 0.
+      ls_color-color-inv = 0.
+
+      APPEND ls_color TO gs_purchase-color.
+      CLEAR  ls_color.
+
+      MODIFY gt_purchase FROM gs_purchase INDEX lv_tabix
+      TRANSPORTING color.
+
+    ENDIF.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_layout .
+
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+  gs_layout-ctab_fname = 'COLOR'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+  PERFORM make_fcat USING :
+          'X' 'EBELN'  ' '  'EKKO' ' ',
+          'X' 'EBELP'  ' '  'EKPO' ' ',
+          ' ' 'BUKRS'  ' '  'EKKO' ' ',
+          ' ' 'BSTYP'  ' '  'EKKO' ' ',
+          ' ' 'BSART'  ' '  'EKKO' ' ',
+          ' ' 'MATNR'  ' '  'EKPO' ' ',
+          ' ' 'WERKS'  ' '  'EKPO' ' ',
+          ' ' 'KTMNG'  ' '  'EKPO' ' ',
+          ' ' 'MEINS'  ' '  'EKPO' ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat  USING pv_key pv_field pv_text pv_ref_table  pv_ref_field.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+
+  CASE pv_field.
+    WHEN 'KTMNG'.
+      gs_fcat-qfieldname = 'MEINS'.
+      gs_fcat-do_sum     = 'X'.
+
+    WHEN 'MATNR'.
+      gs_fcat-emphasize = 'C510'.
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_sort</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_sort .
+
+  gs_sort-fieldname = 'EBELN'.
+  gs_sort-up        = 'X'.
+  gs_sort-spos      = '01'.
+  gs_sort-subtot    = 'X'.
+
+  APPEND gs_sort TO gt_sort.
+  CLEAR  gs_sort.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv .
+
+  CREATE OBJECT gcl_container
+    EXPORTING
+      side      = gcl_container-&gt;dock_at_left
+      extension = 5000.
+
+  CREATE OBJECT gcl_grid
+    EXPORTING
+      i_parent = gcl_container.
+
+  gs_variant-report = sy-repid.
+
+  CALL METHOD gcl_grid-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_purchase
+      it_fieldcatalog = gt_fcat
+      it_sort         = gt_sort.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid-&gt;refresh_table_display
+    EXPORTING
+      is_stable      = gs_stable
+      i_soft_refresh = space.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
