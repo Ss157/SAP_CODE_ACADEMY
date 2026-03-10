@@ -1,0 +1,387 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0071</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0071</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] 자주쓰는 신문법</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0071</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519r0071 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF ls_scarr,
+         carrid   TYPE scarr-carrid,
+         carrname TYPE scarr-carrname,
+         currcode TYPE scarr-currcode,
+         url      TYPE scarr-url,
+         connid   TYPE spfli-connid,
+       END OF ls_scarr,
+
+       lt_scarr  LIKE TABLE OF ls_scarr,
+       lt_scarr3 LIKE TABLE OF ls_scarr,
+       lv_carrid TYPE scarr-carrid VALUE 'DL'.
+
+SELECT carrid carrname currcode url
+  INTO CORRESPONDING FIELDS OF TABLE lt_scarr
+  FROM scarr
+ WHERE carrid = lv_carrid.
+
+LOOP AT lt_scarr INTO ls_scarr.
+
+ENDLOOP.
+
+lt_scarr3 = lt_scarr. "두 itab의 필드 개수 및 타입도 같아줘야되
+
+<font color ="#0000FF">* 신문법</font>
+<font color ="#0000FF">* 로컬에서 쓸 수 있는 방법.</font>
+SELECT carrid, carrname, currcode, url
+  INTO TABLE @DATA(lt_scarr2) "select하면서 위에 있는 필드를 씀.
+  FROM scarr
+ WHERE carrid   = @lv_carrid
+   AND currcode = 'USD'.
+<font color ="#0000FF">*CORRESPONDING FIELDS OF = 이미 인터널 테이블이 정의되어 있다는 함의.</font>
+
+LOOP AT lt_scarr2 INTO DATA(ls_scarr2). "미리 선언하지 않아도 됨. "선언하면서 쓰겠다.
+  "loop 안에서는 data 선언하지 말기
+  "헤더있는 거 신문법에 쓸 수 없음.
+
+ENDLOOP.
+
+DATA(lt_scarr4)  = lt_scarr2.
+DATA(lv_connid)  = ls_scarr-connid.
+DATA(lv_carrid2) = lv_carrid.
+" 필드구조, 레코드까지 똑같이 복사
+"즉, 완전히 똑같이 복사하는 것.
+
+<font color ="#0000FF">**********************************************************************</font>
+
+DATA : lv_carrid3  TYPE scarr-carrid,
+       lv_currcode TYPE scarr-currcode.
+
+SELECT SINGLE carrid currcode
+  INTO ( lv_carrid3, lv_currcode )
+  FROM scarr.
+
+READ TABLE lt_scarr INTO ls_scarr WITH KEY carrid = 'AA'.
+
+LOOP AT lt_scarr INTO ls_scarr.
+
+ENDLOOP.
+
+<font color ="#0000FF">* 신문법</font>
+SELECT SINGLE carrid, currcode
+  INTO ( @DATA(lv_carrid4), @DATA(lv_currcode2) )
+  FROM scarr.
+
+<font color ="#0000FF">* Structure 바로 선언하면서 사용</font>
+READ TABLE lt_scarr INTO DATA(ls_scarr3) WITH KEY carrid = 'AA'.
+
+LOOP AT lt_scarr INTO DATA(ls_scarr4).
+
+ENDLOOP.
+
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">* 스트럭쳐에 값 할당..</font>
+TYPES : BEGIN OF lty_matnr,
+          matnr TYPE mara-matnr,
+          mtart TYPE mara-mtart,
+          werks TYPE marc-werks,
+        END OF lty_matnr.
+
+DATA : BEGIN OF ls_matnr,
+         matnr TYPE mara-matnr,
+         mtart TYPE mara-mtart,
+         werks TYPE marc-werks,
+       END OF ls_matnr.
+
+CLEAR   : ls_matnr.
+
+ls_matnr-matnr = 'RTX0001'.
+ls_matnr-mtart = 'FERT'.
+ls_matnr-werks = '0001'.
+
+ls_matnr-matnr = 'STEEL01'.
+ls_matnr-mtart = 'HALB'.
+
+<font color ="#0000FF">* 신문법</font>
+ls_matnr = VALUE #( "받기전 CLEAR 하고 받기 시작함
+                    matnr = 'RTX0001'
+                    mtart = 'FERT'
+                    werks = '0001'
+                  ).
+
+ls_matnr = VALUE #( BASE ls_matnr "명시된 필드만 바꾸고 나머진 유지
+                    matnr = 'STEEL01'
+                    mtart = 'HALB'
+                  ).
+<font color ="#0000FF">*#의 의미 = ls_matnr과 같은구조</font>
+
+<font color ="#0000FF">*위 신문법과 구문법의 차이</font>
+<font color ="#0000FF">*신문법 VALUE #은 알아서 clear를 하고 들어감.</font>
+<font color ="#0000FF">*구문법은 자동으로 clear 안 됨.</font>
+
+<font color ="#0000FF">*ls_matnr = VALUE lty_matnr(</font>
+<font color ="#0000FF">*                    matnr = 'RTX0001'</font>
+<font color ="#0000FF">*                    mtart = 'FERT'</font>
+<font color ="#0000FF">*                    werks = '0001'</font>
+<font color ="#0000FF">*                  ).</font>
+<font color ="#0000FF">*VALUE #와 같은 의미</font>
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">* 인터널 테이블에 값 할당..</font>
+DATA : lt_matnr LIKE TABLE OF ls_matnr.
+
+CLEAR   : ls_matnr.
+REFRESH : lt_matnr.
+
+ls_matnr-matnr = 'RTX0001'.
+ls_matnr-mtart = 'FERT'.
+ls_matnr-werks = '0001'.
+
+APPEND ls_matnr TO lt_matnr.
+CLEAR  ls_matnr.
+
+ls_matnr-matnr = 'STEEL01'.
+ls_matnr-mtart = 'HALB'.
+ls_matnr-werks = '0001'.
+
+APPEND ls_matnr TO lt_matnr.
+CLEAR  ls_matnr.
+
+ls_matnr-matnr = 'ALUMI100'.
+ls_matnr-mtart = 'ROH'.
+ls_matnr-werks = '0001'.
+
+APPEND ls_matnr TO lt_matnr.
+CLEAR  ls_matnr.
+
+<font color ="#0000FF">* 신문법</font>
+<font color ="#0000FF">* 스트럭처가 필요없음.</font>
+<font color ="#0000FF">* 여기서도 자동 refresh 된다.</font>
+<font color ="#0000FF">* 값을 유지하고 싶을 때, base 구문을 잘 기억해야 한다.</font>
+lt_matnr = VALUE #(
+                    (
+                      matnr = 'RTX0001'
+                      mtart = 'FERT'
+                      werks = '0001'
+                    )
+                    (
+                      matnr = 'STEEL01'
+                      mtart = 'HALB'
+                      werks = '0001'
+                    )
+                  ).
+
+lt_matnr = VALUE #( BASE lt_matnr
+                    (
+                      matnr = 'ALUMI100'
+                      mtart = 'ROH'
+                      werks = '0001'
+                    )
+                  ).
+
+<font color ="#0000FF">**********************************************************************</font>
+
+DATA : ls_mat LIKE ls_matnr,
+       lt_mat LIKE lt_matnr.
+
+MOVE-CORRESPONDING ls_matnr TO ls_mat.
+MOVE-CORRESPONDING lt_matnr TO lt_mat.
+
+<font color ="#0000FF">* 신문법</font>
+ls_mat = CORRESPONDING #( ls_matnr ).
+lt_mat = CORRESPONDING #( lt_matnr ).
+
+READ TABLE lt_matnr INTO ls_matnr WITH KEY matnr = 'STEEL01'
+                                           mtart = 'HALB'.
+
+<font color ="#0000FF">* 신문법</font>
+CLEAR ls_matnr.
+ls_matnr = VALUE #( lt_matnr[ matnr = 'STEEL01'
+                              mtart = 'HALB' ] OPTIONAL ).
+
+IF ls_matnr IS NOT INITIAL.
+<font color ="#0000FF">* 찾지 못했다.</font>
+ENDIF.
+
+READ TABLE lt_matnr INTO ls_matnr INDEX 2.
+
+<font color ="#0000FF">* 신문법</font>
+CLEAR ls_matnr.
+ls_matnr = VALUE #( lt_matnr[ 2 ] OPTIONAL ).
+
+IF ls_matnr IS NOT INITIAL.
+<font color ="#0000FF">* 찾지 못했다.</font>
+ENDIF.
+
+<font color ="#0000FF">**********************************************************************</font>
+DATA : ls_spfli TYPE spfli,
+       lt_spfli LIKE TABLE OF ls_spfli.
+
+SELECT carrid connid airpfrom airpto
+  INTO CORRESPONDING FIELDS OF TABLE lt_spfli
+  FROM spfli.
+
+LOOP AT lt_spfli INTO ls_spfli.
+
+  CASE ls_spfli-carrid.
+    WHEN 'JL'.
+      ls_spfli-carrid = 'KA'.
+
+      MODIFY lt_spfli FROM ls_spfli INDEX sy-tabix TRANSPORTING carrid.
+
+  ENDCASE.
+
+ENDLOOP.
+
+<font color ="#0000FF">* 신문법</font>
+SELECT CASE carrid
+         WHEN 'JL' THEN 'KA'
+         ELSE carrid
+       END AS carrid, connid, airpfrom, airpto,
+       concat_with_space( carrid, connid, 2 ) AS aaa
+  FROM spfli
+  INTO TABLE @DATA(lt_spfli2).
+" 모든 aggregation 함수 쓸 수 있음.
+" new open sql임.
+" 이거 쓰고 최대한 loop같은 거 돌리지 말기
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">*for all entries</font>
+
+DATA : BEGIN OF ls_key,
+         carrid TYPE sflight-carrid,
+         connid TYPE sflight-connid,
+       END OF ls_key,
+
+       lt_key LIKE TABLE OF ls_key,
+       lt_fli TYPE TABLE OF sflight.
+
+SORT lt_key BY carrid connid.
+DELETE ADJACENT DUPLICATES FROM lt_key COMPARING carrid connid.
+
+IF lt_key IS NOT INITIAL.
+
+  SELECT carrid connid
+    INTO CORRESPONDING FIELDS OF TABLE lt_fli
+    FROM sflight
+     FOR ALL ENTRIES IN lt_key
+   WHERE carrid = lt_key-carrid
+     AND connid = lt_key-connid
+     AND currency = 'USD'.
+
+ENDIF.
+
+<font color ="#0000FF">* 신문법</font>
+SORT lt_key BY carrid connid.
+DELETE ADJACENT DUPLICATES FROM lt_key COMPARING carrid connid.
+<font color ="#0000FF">*중복된게 있으면 레코드가 두개 씩 나옴 그래서 체크해야 함.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*이녀설 체크 안해도 됨 inner join임</font>
+
+SELECT b~carrid, b~connid, a~fldate, a~price, a~currency
+  FROM sflight AS a
+ INNER JOIN @lt_key AS b
+    ON a~carrid = b~carrid
+   AND a~connid = b~connid
+ WHERE a~currency = 'USD'
+  INTO CORRESPONDING FIELDS OF TABLE @lt_fli.
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">*  lt_fli 중 price의 mac값 보기</font>
+
+DATA : ls_fli LIKE LINE OF lt_fli,
+       lv_max TYPE sflight-price,
+       lv_avg TYPE dmbtr.
+
+SORT lt_fli BY price DESCENDING.
+
+READ TABLE lt_fli INTO ls_fli INDEX 1.
+
+IF sy-subrc = 0.
+  lv_max = ls_fli-price.
+ENDIF.
+
+<font color ="#0000FF">* 신문법</font>
+SELECT MAX( a~price ) AS max_price, AVG( a~price ) AS avg_price
+  FROM @lt_fli AS a " 인터널 테이블이 from에 오면 as 써야 함.
+  INTO ( @lv_max, @lv_avg ).
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">* 각 carrid 중에 가장 큰 fldate 얻기</font>
+<font color ="#0000FF">* 서브 쿼리 사용법 ( 신문법 아님 원래 open sql에서도 쓸 수 있음 )</font>
+<font color ="#0000FF">* 굉장히 유용함.</font>
+SELECT carrid fldate connid price currency
+  INTO CORRESPONDING FIELDS OF TABLE lt_fli
+  FROM sflight AS a
+ WHERE fldate = ( SELECT MAX( fldate )
+                    FROM sflight
+                   WHERE carrid = a~carrid ).
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">* INLINE View : FROM 절에 서브쿼리를 둔 경우</font>
+<font color ="#0000FF">* line view 신문버ㅂ에만 있음</font>
+<font color ="#0000FF">* 엄청 유용함.</font>
+<font color ="#0000FF">* 특정 결과를 만들고 시작하고 싶을 때 쓰기</font>
+<font color ="#0000FF">* 위드 플러스라고 말하기도 함.</font>
+
+WITH +flight   AS ( SELECT carrid, connid, fldate, price, currency, planetype
+                      FROM sflight
+                     WHERE carrid IN ( 'AA', 'DL' )
+                  ),
+     +schedule AS ( SELECT carrid, connid, airpfrom
+                      FROM spfli
+                     WHERE carrid IN ( 'AA', 'DL' )
+                  )
+
+SELECT a~carrid, a~connid, b~fldate, b~price
+  FROM +schedule AS a
+ INNER JOIN +flight AS b
+    ON a~carrid = b~carrid
+   AND a~connid = b~connid
+ WHERE a~carrid = 'AA'
+  INTO TABLE @DATA(lt_ddd).
+
+cl_demo_output=&gt;display( lt_ddd ).
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">* IF문을</font>
+DATA : lv_num      TYPE i VALUE 10,
+       lv_char(10).
+
+IF lv_num &gt; 5.
+  lv_char = '5초과'.
+ELSE.
+  lv_char = '5이하'.
+ENDIF.
+
+<font color ="#0000FF">* 신문법</font>
+lv_char = COND #( WHEN lv_num &gt; 5 THEN '5초과'
+                  ELSE '5이하' ).
+
+lv_char = COND #( LET vNum = 7 IN
+                  WHEN vNum &gt; 5 THEN '5초과'
+                  ELSE '5이하' ).
+
+MESSAGE s000 WITH lv_char.
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*000   & & & &</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
