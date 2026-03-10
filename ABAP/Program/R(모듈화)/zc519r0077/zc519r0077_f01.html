@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0077_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0077_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0077_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0077_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form modify_init</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM modify_init .
+
+  LOOP AT SCREEN.
+
+    CASE 'X'.
+      WHEN pa_rb1.
+        CASE screen-group1.
+          WHEN 'GP2'.
+            screen-active = 0.
+
+            MODIFY SCREEN.
+
+        ENDCASE.
+
+      WHEN pa_rb2.
+        CASE screen-group1.
+          WHEN 'GP1'.
+            screen-active = 0.
+
+            MODIFY SCREEN.
+
+        ENDCASE.
+
+    ENDCASE.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_purchase</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_purchase .
+
+  REFRESH gt_purchase.
+
+  SELECT ebeln, ebelp, bukrs, bsart, batxt,
+         bstyp, matnr, txz01, menge, meins
+    INTO CORRESPONDING FIELDS OF TABLE @gt_purchase
+    FROM zc519cds0010
+   WHERE ebeln IN @so_ebeln.
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001 DISPLAY LIKE 'E'.
+    STOP.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_product</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_product .
+
+  RANGES : lr_aufnr FOR aufk-aufnr.
+
+  CLEAR   lr_aufnr.
+  REFRESH gt_product.
+
+  IF pa_aufnr IS NOT INITIAL.
+
+    lr_aufnr-sign   = 'I'.
+    lr_aufnr-option = 'EQ'.
+    lr_aufnr-low    = pa_aufnr.
+
+    APPEND lr_aufnr.
+
+  ENDIF.
+
+  SELECT aufnr, posnr, auart, auart_txt, bukrs, werks,
+         matnr, gstrp, gltrp, rsnum,     psmng, amein
+    INTO CORRESPONDING FIELDS OF TABLE @gt_product
+    FROM ZC519cds0011
+   WHERE aufnr IN @lr_aufnr.
+
+  IF sy-subrc &lt;&gt; 0.
+
+    MESSAGE s001 DISPLAY LIKE 'E'.
+    STOP.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_layout .
+
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_purchase</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_purchase .
+
+  PERFORM make_fcat_pur USING :
+  'X'  'EBELN'  ' '  'ZC519CDS0010'  ' ',
+  'X'  'EBELP'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'BUKRS'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'BSART'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'BSTYP'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'BATXT'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'MATNR'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'TXZ01'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'MENGE'  ' '  'ZC519CDS0010'  ' ',
+  ' '  'MEINS'  ' '  'ZC519CDS0010'  ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_product</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_product .
+
+  PERFORM make_fcat_pro USING :
+  'X'  'AUFNR'      ' '  'ZC519CDS0011'  ' ',
+  'X'  'POSNR'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'AUART'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'AUART_TXT'  ' '  'ZC519CDS0011'  ' ',
+  ' '  'BUKRS'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'WERKS'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'MATNR'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'GSTRP'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'GLTRP'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'RSNUM'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'PSMNG'      ' '  'ZC519CDS0011'  ' ',
+  ' '  'AMEIN'      ' '  'ZC519CDS0011'  ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat_pur</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat_pur  USING pv_key
+                          pv_field
+                          pv_text
+                          pv_ref_table
+                          pv_ref_field.
+
+<font color ="#0000FF">*  gs_fcat = VALUE lvc_s_fcat(</font>
+  gs_fcat = VALUE #(
+                     key       = pv_key
+                     fieldname = pv_field
+                     coltext   = pv_text
+                     ref_table = pv_ref_table
+                     ref_field = pv_ref_field
+                   ).
+
+<font color ="#0000FF">*  gs_fcat-key       = pv_key.</font>
+<font color ="#0000FF">*  gs_fcat-fieldname = pv_field.</font>
+<font color ="#0000FF">*  gs_fcat-coltext   = pv_text.</font>
+<font color ="#0000FF">*  gs_fcat-ref_table = pv_ref_table.</font>
+<font color ="#0000FF">*  gs_fcat-ref_field = pv_ref_field.</font>
+
+
+
+  CASE pv_field.
+    WHEN 'MENGE'.
+      gs_fcat = VALUE #( BASE gs_fcat
+                   qfieldname = 'MEINS'
+                 ).
+<font color ="#0000FF">*      gs_fcat-qfieldname = 'MEINS'.</font>
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat_pro</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat_pro  USING pv_key
+                          pv_field
+                          pv_text
+                          pv_ref_table
+                          pv_ref_field.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+
+  CASE pv_field.
+    WHEN 'PSMNG'.
+      gs_fcat-qfieldname = 'AMEIN'.
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv .
+
+  FIELD-SYMBOLS : &lt;lft_itab&gt; TYPE ANY TABLE.
+
+  UNASSIGN &lt;lft_itab&gt;.
+
+  " 인터널 테이블은 gt_purchase, gt_product 중에
+  " 하나이기 때문에 필드 심볼을 사용해서 set_table...을
+  " 한 번하도록 변경했다.
+  CASE 'X'.
+    WHEN pa_rb1.
+      ASSIGN gt_purchase TO &lt;lft_itab&gt;.
+
+      gs_variant-handle = 'RB1'.
+
+    WHEN pa_rb2.
+      ASSIGN gt_product TO &lt;lft_itab&gt;.
+
+      gs_variant-handle = 'RB2'.
+
+  ENDCASE.
+
+  " 굳이 안 해도 됨. loop 돌릴 때 하기
+  IF &lt;lft_itab&gt; IS NOT ASSIGNED.
+    MESSAGE s000 WITH 'Table name is wrong'
+    DISPLAY LIKE 'E'.
+    STOP.
+  ENDIF.
+
+  CREATE OBJECT gcl_container
+    EXPORTING
+      side      = gcl_container-&gt;dock_at_left
+      extension = 5000.
+
+  CREATE OBJECT gcl_grid
+    EXPORTING
+      i_parent = gcl_container.
+
+  gs_variant-report = sy-repid.
+
+  CALL METHOD gcl_grid-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = &lt;lft_itab&gt;
+      it_fieldcatalog = gt_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid-&gt;refresh_table_display
+    EXPORTING
+      is_stable = gs_stable.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_title</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_title .
+
+  CASE sy-tcode.
+    WHEN 'ZC519R0077'.
+      sy-title = '[C5] Purchase Order'.
+
+    WHEN 'ZC519R0077_2'.
+      sy-title = '[C5] Product Order'.
+
+    WHEN OTHERS.
+      sy-title = 'Tcode로 실행시켜주세용용'.
+
+  ENDCASE.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_btn</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_btn .
+
+  CALL FUNCTION 'ICON_CREATE'
+    EXPORTING
+      name   = icon_xls
+      text   = 'Download'
+      info   = 'Template Down'
+    IMPORTING
+      result = sscrfields-functxt_01.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

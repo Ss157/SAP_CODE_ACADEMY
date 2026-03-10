@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0077</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0077</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C5] CDS View 실습 02</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZC519R0077</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+include <a href ="zc519r0077_top.html">zc519r0077_top</a>.    " Global Data
+
+include <a href ="zc519r0077_s01.html">zc519r0077_s01</a>.  " Selection Screen
+include <a href ="zc519r0077_o01.html">zc519r0077_o01</a>.  " PBO-Modules
+include <a href ="zc519r0077_i01.html">zc519r0077_i01</a>.  " PAI-Modules
+include <a href ="zc519r0077_f01.html">zc519r0077_f01</a>.  " FORM-Routines
+
+INITIALIZATION.
+  PERFORM set_title.
+  PERFORM set_btn.
+
+<font color ="#0000FF">* 라디오 버튼에 따라 화면이 달라지게 함.</font>
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM modify_init.
+
+AT SELECTION-SCREEN.
+
+  CASE sscrfields-ucomm.
+    WHEN 'FC01'. " 첫번째 버튼을 의미.
+      MESSAGE i000 WITH '눌렀다.'.
+
+  ENDCASE.
+
+START-OF-SELECTION.
+
+  CASE 'X'.
+    WHEN pa_rb1.
+      PERFORM get_purchase.
+
+    WHEN pa_rb2.
+      PERFORM get_product.
+
+  ENDCASE.
+
+  CALL SCREEN '0100'.
+
+<font color ="#0000FF">*GUI Texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T0100 --&gt; [C5] &1</font>
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Selection Condition</font>
+<font color ="#0000FF">* T02 Purchase Order List</font>
+<font color ="#0000FF">* T03 Product Order List</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_AUFNR D       .</font>
+<font color ="#0000FF">* PA_RB1         Purchase</font>
+<font color ="#0000FF">* PA_RB2         Product</font>
+<font color ="#0000FF">* SO_EBELN D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZC519M</font>
+<font color ="#0000FF">*000   & & & &</font>
+<font color ="#0000FF">*001   Data not found</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519R0079_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519R0079_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519R0079_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519R0079_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_data_table</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_data_table .
+
+  CLEAR   : gs_data.
+  REFRESH : gt_data.
+
+  DATA : lcl_statement TYPE REF TO cl_sql_statement,
+<font color ="#0000FF">*         lcl_connection TYPE REF TO cl_sql_connection,</font>
+<font color ="#0000FF">*         lcl_result    TYPE REF TO cl_sql_result_set, " 결과 받을 곳</font>
+         lr_data       TYPE REF TO data, " any data 어떤 데이터든지 될 수 있음
+         lv_sql        TYPE string,
+         lx_sql_except TYPE REF TO cx_root,
+         lv_msg        TYPE string.
+
+  TRY.
+<font color ="#0000FF">* DB Connection 연결정보 얻기</font>
+      DATA(lcl_connection) = cl_sql_connection=&gt;get_connection( ). "Default Connection 얻기
+
+<font color ="#0000FF">* SQL 을 실행할 객체에 Connection 전달</font>
+      CREATE OBJECT lcl_statement
+        EXPORTING
+          con_ref = lcl_connection. " Database Connection
+
+<font color ="#0000FF">* 실행할 SQL 구문 작성</font>
+      lv_sql = | SELECT CARRID, CONNID, FLDATE, PRICE, CURRENCY | &&
+               |   FROM SFLIGHT                                 | &&
+               |  WHERE MANDT  = '{ sy-mandt }'                 | &&
+               |    AND CARRID = '{ pa_carr }'                  |.
+
+<font color ="#0000FF">* SQL 을 실행하고 그 결과를 받아라..</font>
+      DATA(lcl_result) = lcl_statement-&gt;execute_query( lv_sql ).
+
+<font color ="#0000FF">* 결과를 받기 위해서 Any Data와 itab을 동기화 시킴( Call by reference 처럼 )</font>
+      GET REFERENCE OF gt_data INTO lr_data.
+
+<font color ="#0000FF">* 결과를 받으러 lr_data 가 DB로 들어감.</font>
+      lcl_result-&gt;set_param_table( lr_data ).
+
+<font color ="#0000FF">* 결과를 lr_data가 받았으니 이를 gt_sflight 와 공유</font>
+<font color ="#0000FF">* -&gt; 이순간에 gt_data 에 레코드 들어감</font>
+      lcl_result-&gt;next_package( ).
+
+<font color ="#0000FF">* Connection 자원 반환</font>
+      lcl_result-&gt;close( ).
+
+    CATCH cx_sql_exception INTO lx_sql_except.
+
+<font color ="#0000FF">* 에러 메시지 받기</font>
+      lv_msg = lx_sql_except-&gt;get_text( ).
+      lcl_result-&gt;close( ).
+      " lcl_result-&gt;next_package( ).에서 에러 뜨면
+      " 바로 catch문으로 오기 때문에 close 한 번 더 함.
+
+      MESSAGE s000 WITH lv_msg DISPLAY LIKE 'E'.
+      EXIT.
+
+  ENDTRY.
+
+<font color ="#0000FF">* gt_data 가지고 loop 돌던 머 하던 필요한 로직 작성하면 됨.</font>
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form insert_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM insert_data .
+
+  DATA : lcl_statement TYPE REF TO cl_sql_statement,
+         lv_sql        TYPE string,
+         lx_sql_except TYPE REF TO cx_root,
+         lv_msg        TYPE string.
+
+  TRY.
+<font color ="#0000FF">* DB Connection 연결정보 얻기</font>
+      DATA(lcl_connection) = cl_sql_connection=&gt;get_connection( ). "Default Connection 얻기
+
+<font color ="#0000FF">* SQL 을 실행할 객체에 Connection 전달</font>
+      CREATE OBJECT lcl_statement
+        EXPORTING
+          con_ref = lcl_connection. " Database Connection
+
+<font color ="#0000FF">* 실행할 SQL 구문 작성</font>
+      lv_sql = | INSERT INTO ZC519T0030 | &&
+               | ( MANDT,               | && " 쓸 필드 이름 쓰기
+               |   GROUP_ID,            | &&
+               |   MEMBER_ID,           | &&
+               |   MEMBER_NAME,         | &&
+               |   MEMBER_GENDER,       | &&
+               |   MEMBER_ADDR,         | &&
+               |   MEMBER_PHONE,        | &&
+               |   ERDAT,               | &&
+               |   ERZET,               | &&
+               |   ERNAM )              | &&
+               | VALUES                 | && " VALUES 뒤에 값 쓰기
+               | ( '{ sy-mandt }',      | &&
+               |   '0001',              | &&
+               |   6,                   | &&
+               |   '김겨울',            | &&
+               |   'F',                 | &&
+               |   '한양',              | &&
+               |   '010-222-333',       | &&
+               |   '{ sy-datum }',      | &&
+               |   '{ sy-uzeit }',      | &&
+               |   '{ sy-uname }' )     |.
+
+      lcl_statement-&gt;execute_update( lv_sql ).
+
+      lcl_connection-&gt;commit( ).
+      lcl_connection-&gt;close( ).
+
+      MESSAGE s002.
+
+    CATCH cx_sql_exception INTO lx_sql_except.
+
+<font color ="#0000FF">* 에러 메시지 받기</font>
+      lv_msg = lx_sql_except-&gt;get_text( ).
+      lcl_connection-&gt;rollback( ).
+      lcl_connection-&gt;close( ).
+
+      " 위에서 에러 뜨면
+      " 바로 catch문으로 오기 때문에 close 한 번 더 함.
+
+      MESSAGE s000 WITH lv_msg DISPLAY LIKE 'E'.
+      EXIT.
+
+  ENDTRY.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
