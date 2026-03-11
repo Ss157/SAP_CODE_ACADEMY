@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MZC519LECT01_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MZC519LECT01_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include SAPMZC519LECT01_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          SAPMZC519LECT01_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_class_text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_class_text .
+
+  CLEAR gs_input-class_text.
+
+  CASE gs_input-class.
+    WHEN 'CL1'.
+      gs_input-class_text = 'Class 1'.
+
+    WHEN 'CL2'.
+      gs_input-class_text = 'Class 2'.
+
+    WHEN 'CL3'.
+      gs_input-class_text = 'Class 3'.
+
+    WHEN 'CL4'.
+      gs_input-class_text = 'Class 4'.
+
+    WHEN 'CL5'.
+      gs_input-class_text = 'Class 5'.
+
+    WHEN 'CL6'.
+      gs_input-class_text = 'Class 6'.
+
+    WHEN 'CL7'.
+      gs_input-class_text = 'Class 7'.
+
+  ENDCASE.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_gender_text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_gender_text .
+
+  CLEAR gs_input-gender_text.
+
+  CASE gs_input-gender.
+    WHEN 'F'.
+      gs_input-gender_text = 'Female'.
+
+    WHEN 'M'.
+      gs_input-gender_text = 'Male'.
+
+  ENDCASE.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form f4_cl_num</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM f4_cl_num .
+
+  DATA : BEGIN OF ls_cl_num,
+           class  TYPE zc519t0002-class,
+           cl_num TYPE zc519t0002-cl_num,
+           name   TYPE zc519t0002-name,
+           phone  TYPE zc519t0002-phone,
+           gender TYPE zc519t0002-gender,
+         END OF ls_cl_num,
+
+         lt_cl_num LIKE TABLE OF ls_cl_num,
+
+         ls_return TYPE ddshretval,
+         lt_return LIKE TABLE OF ls_return.
+
+  CLEAR   : ls_cl_num, ls_return.
+  REFRESH : lt_cl_num, lt_return.
+
+  SELECT class cl_num name phone gender
+    INTO CORRESPONDING FIELDS OF TABLE lt_cl_num
+    FROM zc519t0002.
+
+  " 더블클릭 하면 바로 화면에 값을 떨구는 방식
+<font color ="#0000FF">*  CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST' "f4를 만들어주는 스탠다드 ㅎ마수</font>
+<font color ="#0000FF">*    EXPORTING</font>
+<font color ="#0000FF">*      retfield     = 'CL_NUM' " 인터널 테이블의 플드 중에서</font>
+<font color ="#0000FF">*      "value_tab 의 itab에서 화면에 떨굴 필드</font>
+<font color ="#0000FF">*      dynpprog     = sy-repid "현재 프로그램 번호</font>
+<font color ="#0000FF">*      dynpnr       = sy-dynnr " 현재 스크린 번호. '0100'을 해도 됨.</font>
+<font color ="#0000FF">*      dynprofield  = 'GS_INPUT-CL_NUM' " 더블클릭한 값을 떨굴 화면의 필드</font>
+<font color ="#0000FF">*      window_title = 'Student List'</font>
+<font color ="#0000FF">*      value_org    = 'S' " C는 더블클릭해도 동작 x</font>
+<font color ="#0000FF">*      display      = ' ' "--&gt; X값 주게 되면 화면에 떨구지 않음</font>
+<font color ="#0000FF">*    TABLES</font>
+<font color ="#0000FF">*      value_tab    = lt_cl_num.</font>
+
+  CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST' "f4를 만들어주는 스탠다드 ㅎ마수
+    EXPORTING
+      retfield     = 'CL_NUM' " 인터널 테이블의 플드 중에서
+      "value_tab 의 itab에서 화면에 떨굴 필드
+      dynpprog     = sy-repid "현재 프로그램 번호
+      dynpnr       = sy-dynnr " 현재 스크린 번호. '0100'을 해도 됨.
+      dynprofield  = 'GS_INPUT-CL_NUM' " 더블클릭한 값을 떨굴 화면의 필드
+      window_title = 'Student List'
+      value_org    = 'S' " C는 더블클릭해도 동작 x
+<font color ="#0000FF">*     display      = 'X' "--&gt; X값 주게 되면 화면에 떨구지 않음</font>
+    TABLES
+      return_tab   = lt_return
+      value_tab    = lt_cl_num.
+
+  READ TABLE lt_return INTO ls_return INDEX 1.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  gs_input-cl_num = ls_return-fieldval.
+
+  READ TABLE lt_cl_num INTO ls_cl_num WITH KEY cl_num = gs_input-cl_num.
+
+  IF sy-subrc = 0.
+
+<font color ="#0000FF">*    gs_input-name = ls_cl_num-name.</font>
+
+    CALL FUNCTION 'SAPGUI_SET_FUNCTIONCODE'
+      EXPORTING
+        functioncode           = 'SETNAME'
+      EXCEPTIONS
+        function_not_supported = 1
+        OTHERS                 = 2.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_name</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_name .
+
+  CLEAR gs_input-name.
+
+  SELECT SINGLE name
+    INTO gs_input-name
+    FROM zc519t0002
+   WHERE class  = gs_input-class
+     AND cl_num = gs_input-cl_num.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

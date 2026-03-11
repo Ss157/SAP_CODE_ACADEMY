@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MZC519LECT01_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MZC519LECT01_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include SAPMZC519LECT01_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include SAPMZC519LECT01_TOP                      - Module Pool      SAPMZC519LECT01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+PROGRAM sapmzc519lect01 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF gs_input,
+         class           TYPE zc519t0002-class,
+         class_text(10),
+         cl_num          TYPE zc519t0002-cl_num,
+         name            TYPE zc519t0002-name,
+         gender          TYPE zc519t0002-gender, "테이블의 필드를 간접으로 보고 있음
+         gender_text(10),
+         amount          TYPE dmbtr,
+         waers           TYPE zc519t0018-waers,
+         qty             TYPE menge_d,
+         meins           TYPE zc519t0018-meins, "그냥 DE , 테이블이 없음, fk를 못 봄
+       END OF gs_input,
+
+       gv_okcode TYPE sy-ucomm.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
