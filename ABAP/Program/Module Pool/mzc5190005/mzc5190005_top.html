@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MZC5190005_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MZC5190005_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include SAPMZC5190005_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include SAPMZC5190005_TOP                        - Module Pool      SAPMZC5190005</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+PROGRAM sapmzc5190005 MESSAGE-ID zc519m.
+
+DATA : gv_seq    TYPE zc519t0042-seq,
+       gv_okcode TYPE sy-ucomm.
+
+<font color ="#0000FF">* Text Edit 관련</font>
+DATA : gcl_container_l TYPE REF TO cl_gui_custom_container,
+       gcl_container_r TYPE REF TO cl_gui_custom_container,
+       gcl_text_l      TYPE REF TO cl_gui_textedit,
+       gcl_text_r      TYPE REF TO cl_gui_textedit.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

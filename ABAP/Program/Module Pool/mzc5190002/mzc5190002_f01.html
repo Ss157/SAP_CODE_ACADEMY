@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MZC5190002_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MZC5190002_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include SAPMZC5190002_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          SAPMZC5190002_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_layout .
+
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+  PERFORM make_fcat USING :
+  'X'  'GOODS'        ' '  'ZC519T0039'  ' ',
+  ' '  'CATEGORY'     ' '  'ZC519T0039'  ' ',
+  ' '  'GOODS_COUNT'  ' '  'ZC519T0039'  ' ',
+  ' '  'GOODS_DESC'   ' '  'ZC519T0039'  ' ',
+  ' '  'LABST'        ' '  'ZC519T0039'  ' ',
+  ' '  'MEINS'        ' '  'ZC519T0039'  ' ',
+  ' '  'NETPR'        ' '  'ZC519T0039'  ' ',
+  ' '  'WAERS'        ' '  'ZC519T0039'  ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat  USING pv_key
+                      pv_field
+                      pv_text
+                      pv_ref_table
+                      pv_ref_field.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+
+  CASE pv_field.
+    WHEN 'LABST'.
+      gs_fcat-qfieldname = 'MEINS'.
+
+    WHEN 'NETPR'.
+      gs_fcat-cfieldname = 'WAERS'.
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv .
+
+  CREATE OBJECT gcl_container
+    EXPORTING
+      container_name = 'GCL_CONTAINER'.
+
+  CREATE OBJECT gcl_grid
+    EXPORTING
+      i_parent = gcl_container.
+
+  gs_variant-report = sy-repid.
+
+  CALL METHOD gcl_grid-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_goods
+      it_fieldcatalog = gt_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form clear_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM clear_data .
+
+  CLEAR gs_goods.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_data .
+<font color ="#0000FF">* ZC519R0051_F01 &lt;-- lines</font>
+  DATA : lv_cnt TYPE i.
+
+  CLEAR  lv_cnt.
+  _clear gs_row gt_row.
+
+  CALL METHOD gcl_grid-&gt;get_selected_rows
+    IMPORTING
+      et_index_rows = gt_row.
+
+  IF gt_row IS INITIAL .
+
+    MESSAGE s000 WITH TEXT-f01 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  lv_cnt = lines( gt_row ).
+
+  IF lv_cnt &lt;&gt; 1.
+
+    MESSAGE s000 WITH TEXT-f02 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  READ TABLE gt_row INTO gs_row INDEX 1.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  READ TABLE gt_goods INTO gs_goods INDEX gs_row-index.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_goods</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_goods .
+
+  _clear gs_goods gt_goods.
+
+  SELECT goods category goods_count goods_desc
+         labst meins    netpr       waers
+         erdat erzet    ernam
+         aedat aezet    aenam
+    INTO CORRESPONDING FIELDS OF TABLE gt_goods
+    FROM zc519t0039
+   ORDER BY goods.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form save_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM save_data .
+
+  DATA : ls_save TYPE zc519t0039.
+
+  CLEAR  ls_save.
+
+  IF gs_goods-goods IS INITIAL.
+
+    MESSAGE s000 WITH TEXT-f03 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  MOVE-CORRESPONDING gs_goods TO ls_save.
+
+  IF ls_save-erdat IS INITIAL.
+
+    ls_save-erdat = sy-datum.
+    ls_save-erzet = sy-uzeit.
+    ls_save-ernam = sy-uname.
+
+  ELSE.
+
+    ls_save-aedat = sy-datum.
+    ls_save-aezet = sy-uzeit.
+    ls_save-aenam = sy-uname.
+
+  ENDIF.
+
+  MODIFY zc519t0039 FROM ls_save.
+
+  IF sy-dbcnt &gt; 0.
+
+    COMMIT WORK AND WAIT.
+
+    PERFORM get_goods.
+    PERFORM refresh_grid.
+
+    MESSAGE s002.
+
+  ELSE.
+
+    ROLLBACK WORK.
+    MESSAGE s004 DISPLAY LIKE 'E'.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid-&gt;refresh_table_display
+    EXPORTING
+      is_stable      = gs_stable
+      i_soft_refresh = space.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form delete_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM delete_data .
+
+  IF gs_goods-goods IS INITIAL.
+
+    MESSAGE s000 WITH TEXT-f03 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  DELETE FROM zc519t0039
+   WHERE goods = gs_goods-goods.
+
+  IF sy-subrc = 0.
+
+    COMMIT WORK AND WAIT.
+
+    PERFORM get_goods.
+    PERFORM refresh_grid.
+
+    MESSAGE s003.
+
+  ELSE.
+
+    ROLLBACK WORK.
+    MESSAGE s005 DISPLAY LIKE 'E'.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form f4_goods</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM f4_goods .
+
+  DATA : ls_goods  TYPE zc519t0014,
+         lt_goods  LIKE TABLE OF ls_goods,
+
+         ls_return TYPE ddshretval,
+         lt_return LIKE TABLE OF ls_return.
+
+  _clear ls_goods  lt_goods.
+  _clear ls_return lt_return.
+
+  SELECT goods goods_desc
+    INTO CORRESPONDING FIELDS OF TABLE lt_goods
+    FROM zc519t0014.
+
+  CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
+    EXPORTING
+      retfield     = 'GOODS'                " Name of return field in FIELD_TAB
+      dynpprog     = sy-repid            " Current program
+      dynpnr       = sy-dynnr            " Screen number
+      dynprofield  = 'GS_GOODS-GOODS'            " Name of screen field for value return
+      window_title = 'Goods Description'                " Title for the hit list
+      value_org    = 'S'              " Value return: C: cell by cell, S: structured
+      display      = space            " Override readiness for input
+    TABLES
+      value_tab    = lt_goods                 " Table of values: entries cell by cell
+<font color ="#0000FF">*     field_tab    =                  " Fields of the hit list</font>
+      return_tab   = lt_return.
+
+  READ TABLE lt_return INTO ls_return INDEX 1.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  gs_goods-goods = ls_return-fieldval.
+
+  READ TABLE lt_goods INTO ls_goods WITH KEY goods = gs_goods-goods.
+
+  IF sy-subrc = 0.
+
+    CALL FUNCTION 'SAPGUI_SET_FUNCTIONCODE'
+      EXPORTING
+        functioncode           = 'SETDESC'
+      EXCEPTIONS
+        function_not_supported = 1
+        OTHERS                 = 2.
+
+  ENDIF.
+
+ENDFORM.
+
+FORM set_desc.
+
+  CLEAR gs_goods-goods_desc.
+
+  SELECT SINGLE goods_desc
+    INTO gs_goods-goods_desc
+    FROM zc519t0014
+   WHERE goods = gs_goods-goods.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

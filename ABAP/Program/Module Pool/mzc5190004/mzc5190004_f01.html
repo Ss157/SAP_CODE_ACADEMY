@@ -1,0 +1,408 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MZC5190004_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MZC5190004_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include SAPMZC5190004_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          SAPMZC5190004_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_layout .
+
+<font color ="#0000FF">* sel_mode를 D로 했다. D로 하면서 행을 선택하지 않은 것뿐만 아니라</font>
+<font color ="#0000FF">* 다중행 선택한 것도 검사해야 한다.</font>
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+  PERFORM make_fcat USING :
+  'X'  'AUFNR'  ' '  'ZC519T0041'  ' ',
+  'X'  'POSNR'  ' '  'ZC519T0041'  ' ',
+  ' '  'MATNR'  ' '  'ZC519T0041'  ' ',
+  ' '  'PWERK'  ' '  'ZC519T0041'  ' ',
+  ' '  'GSTRP'  ' '  'ZC519T0041'  ' ',
+  ' '  'GLTRP'  ' '  'ZC519T0041'  ' ',
+  ' '  'RSNUM'  ' '  'ZC519T0041'  ' ',
+  ' '  'GAMNG'  ' '  'ZC519T0041'  ' ',
+  ' '  'GMEIN'  ' '  'ZC519T0041'  ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat  USING pv_key
+                      pv_field
+                      pv_text
+                      pv_ref_table
+                      pv_ref_field.
+
+<font color ="#0000FF">* AUFNR 필드에 핫스팟을 주기 위해서는</font>
+<font color ="#0000FF">* 필드 카탈로그에서 아래와 같이 X 표시를 주어야 한다.</font>
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-coltext   = pv_text.
+  gs_fcat-ref_table = pv_ref_table.
+  gs_fcat-ref_field = pv_ref_field.
+
+  CASE pv_field.
+    WHEN 'GAMNG'.
+      gs_fcat-qfieldname = 'GMEIN'.
+
+    WHEN 'AUFNR'.
+      gs_fcat-hotspot    = 'X'.
+
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv .
+
+  CREATE OBJECT gcl_container
+    EXPORTING
+      container_name = 'GCL_CONTAINER'.
+
+  CREATE OBJECT gcl_grid
+    EXPORTING
+      i_parent = gcl_container.
+
+  gs_variant-report = sy-repid.
+
+<font color ="#0000FF">* 만든 local 메소드를 사용하기 위해서는</font>
+<font color ="#0000FF">* set handler를 사용해서 정의를 해주어야 한다.</font>
+  SET HANDLER : lcl_event_handler=&gt;handle_double_click FOR gcl_grid,
+                lcl_event_handler=&gt;handle_hotspot      FOR gcl_grid.
+
+  CALL METHOD gcl_grid-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_order
+      it_fieldcatalog = gt_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form clear_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM clear_data .
+
+  CLEAR gs_order.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_data .
+
+<font color ="#0000FF">* lines를 사용해서 선택한 행의 개수를 보고 다중 행이면</font>
+<font color ="#0000FF">* 메세지 처리와 exit를 해주었다.</font>
+<font color ="#0000FF">* 그 후, gt_row에서 선택한 행의 index를 읽었다.</font>
+<font color ="#0000FF">* 얻은 index를 사용해서 gt_order에서 gs_order로 값을 읽어</font>
+<font color ="#0000FF">* display했다.</font>
+  DATA : lv_cnt TYPE i.
+
+  CLEAR  lv_cnt.
+  _clear gs_row gt_row.
+
+  CALL METHOD gcl_grid-&gt;get_selected_rows
+    IMPORTING
+      et_index_rows = gt_row.
+
+  IF gt_row IS INITIAL.
+
+    MESSAGE s000 WITH TEXT-f01 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  lv_cnt = lines( gt_row ).
+
+  IF lv_cnt &gt; 1.
+
+    MESSAGE s000 WITH TEXT-f02 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  READ TABLE gt_row INTO gs_row INDEX 1.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  READ TABLE gt_order INTO gs_order INDEX gs_row-index.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form save_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM save_data .
+
+<font color ="#0000FF">* 하나의 행을 save하는 것이기 때문에 lt_save는 선언할</font>
+<font color ="#0000FF">* 필요가 없어서 ls_save만 선언한다.</font>
+<font color ="#0000FF">* pk 중 하나라도 빈 값이면 메세지 처리하고 exit한다.</font>
+<font color ="#0000FF">* pk가 정상적으로 들어왔다면 erdat가 빈 값인지 확인하고</font>
+<font color ="#0000FF">* 그에 따라 timestamp를 관리한다.</font>
+<font color ="#0000FF">* modify 한 후 성공적이였다면 commit 한 후</font>
+<font color ="#0000FF">* select와 grid를 다시 그림으로써 화면상에서 사용자가</font>
+<font color ="#0000FF">* 인지할 수 있게 해준다.</font>
+<font color ="#0000FF">* modify 성공 여부에 따라서 메세지 처리를 해준다.</font>
+  DATA : ls_save TYPE zc519t0041.
+
+  CLEAR  ls_save.
+
+  IF gs_order-aufnr IS INITIAL OR
+     gs_order-posnr IS INITIAL.
+
+    MESSAGE s000 WITH TEXT-f03 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  MOVE-CORRESPONDING gs_order TO ls_save.
+
+  IF ls_save-erdat IS INITIAL.
+
+    ls_save-erdat = sy-datum.
+    ls_save-erzet = sy-uzeit.
+    ls_save-ernam = sy-uname.
+
+  ELSE.
+
+    ls_save-aedat = sy-datum.
+    ls_save-aezet = sy-uzeit.
+    ls_save-aenam = sy-uname.
+
+  ENDIF.
+
+  MODIFY zc519t0041 FROM ls_save.
+
+  IF sy-dbcnt &gt; 0.
+
+    COMMIT WORK AND WAIT.
+
+    PERFORM get_order.
+    PERFORM refresh_grid.
+
+    MESSAGE s002.
+
+  ELSE.
+
+    ROLLBACK WORK.
+    MESSAGE s004 DISPLAY LIKE 'E'.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form delete_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM delete_data .
+
+<font color ="#0000FF">* pk 중 하나라도 빈 값이면 메세지 처리하고 exit한다.</font>
+<font color ="#0000FF">* pk 값에 따라 delete 한 후 성공적이였다면 commit 한 후</font>
+<font color ="#0000FF">* select와 grid를 다시 그림으로써 화면상에서 사용자가</font>
+<font color ="#0000FF">* 인지할 수 있게 해준다.</font>
+<font color ="#0000FF">* delete 성공 여부에 따라서 메세지 처리를 해준다.</font>
+  IF gs_order-aufnr IS INITIAL OR
+     gs_order-posnr IS INITIAL.
+
+    MESSAGE s000 WITH TEXT-f03 DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  DELETE FROM zc519t0041
+   WHERE aufnr = gs_order-aufnr
+     AND posnr = gs_order-posnr.
+
+  IF sy-dbcnt &gt; 0.
+
+    COMMIT WORK AND WAIT.
+
+    PERFORM get_order.
+    PERFORM refresh_grid.
+
+    MESSAGE s003.
+
+  ELSE.
+
+    ROLLBACK WORK.
+    MESSAGE s005 DISPLAY LIKE 'E'.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_order</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_order .
+
+  _clear gs_order gt_order.
+
+  SELECT aufnr posnr matnr pwerk gstrp
+         gltrp rsnum gamng gmein
+         erdat erzet ernam
+         aedat aezet aenam
+    INTO CORRESPONDING FIELDS OF TABLE gt_order
+    FROM zc519t0041
+   ORDER BY aufnr posnr.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid-&gt;refresh_table_display
+    EXPORTING
+      is_stable      = gs_stable
+      i_soft_refresh = space.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_hotspot</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_COLUMN_ID</font>
+<font color ="#0000FF">*&      --&gt; E_ROW_ID</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_hotspot  USING ps_col TYPE lvc_s_col
+                           ps_row TYPE lvc_s_row.
+
+<font color ="#0000FF">* rowtype이 0이 아니면 exit한다.</font>
+<font color ="#0000FF">* 일반 행은 rowtype이 0이고 합계, 소계 등은</font>
+<font color ="#0000FF">* rowtype이 0이 아니기 때문이다.</font>
+<font color ="#0000FF">* aufnr을 클릭했으면 파리미터 아이디를 설정하고</font>
+<font color ="#0000FF">* 트랜잭션을 부른다.</font>
+<font color ="#0000FF">* 또한, 첫 화면은 건너뛰어준다.</font>
+  IF ps_row-rowtype IS NOT INITIAL.
+    EXIT.
+  ENDIF.
+
+  READ TABLE gt_order INTO gs_order INDEX ps_row-index.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  CASE ps_col-fieldname.
+    WHEN 'AUFNR'.
+
+      SET PARAMETER ID 'ANR' FIELD gs_order-aufnr.
+
+      CALL TRANSACTION 'CO03' AND SKIP FIRST SCREEN.
+
+  ENDCASE.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_double_click</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_COLUMN</font>
+<font color ="#0000FF">*&      --&gt; E_ROW</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_double_click  USING ps_col TYPE lvc_s_col
+                                ps_row TYPE lvc_s_row.
+
+<font color ="#0000FF">* rowtype이 0이 아니면 exit한다.</font>
+<font color ="#0000FF">* 일반 행은 rowtype이 0이고 합계, 소계 등은</font>
+<font color ="#0000FF">* rowtype이 0이 아니기 때문이다.</font>
+<font color ="#0000FF">* matnr을 클릭했으면 파리미터 아이디를 설정하고</font>
+<font color ="#0000FF">* 트랜잭션을 부른다.</font>
+<font color ="#0000FF">* 또한, 첫 화면은 건너뛰어준다.</font>
+  IF ps_row-rowtype IS NOT INITIAL.
+    EXIT.
+  ENDIF.
+
+  READ TABLE gt_order INTO gs_order INDEX ps_row-index.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  CASE ps_col-fieldname.
+    WHEN 'MATNR'.
+
+      SET PARAMETER ID 'MAT' FIELD gs_order-matnr.
+
+      CALL TRANSACTION 'MM03' AND SKIP FIRST SCREEN.
+
+  ENDCASE.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
