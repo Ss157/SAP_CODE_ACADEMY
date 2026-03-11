@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519RLECT04_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519RLECT04_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519RLECT04_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519RLECT04_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form init_parm</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM init_parm .
+
+  so_bukrs-sign   = 'I'.
+  so_bukrs-option = 'EQ'.
+  so_bukrs-low    = '0001'.
+
+  APPEND so_bukrs.
+
+  so_gjahr-sign   = 'I'.
+  so_gjahr-option = 'EQ'.
+  so_gjahr-low    = '2010'.
+
+  APPEND so_gjahr.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_account</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_account .
+
+  CLEAR   : gs_account.
+  REFRESH : gt_account.
+
+  SELECT a~bukrs a~gjahr a~belnr a~blart a~budat
+         b~buzei b~bschl b~koart b~shkzg b~dmbtr b~pswsl
+         c~ltext AS blart_txt
+         d~ltext AS bschl_txt
+    INTO CORRESPONDING FIELDS OF TABLE gt_account
+    FROM      bkpf AS a
+   INNER JOIN bseg AS b
+      ON a~bukrs = b~bukrs
+     AND a~belnr = b~belnr
+     AND a~gjahr = b~gjahr
+    LEFT OUTER JOIN t003t AS c
+      ON a~blart = c~blart
+     AND c~spras = sy-langu
+    LEFT OUTER JOIN tbslt AS d
+      ON b~bschl = d~bschl
+     AND d~spras = sy-langu
+   WHERE a~bukrs IN so_bukrs
+     AND a~gjahr IN so_gjahr.
+
+  IF sy-subrc &lt;&gt; 0.
+    MESSAGE s001.
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form modify_account</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM modify_account .
+
+  DATA : lv_tabix TYPE sy-tabix.
+
+  LOOP AT gt_account INTO gs_account.
+
+    lv_tabix = sy-tabix.
+
+    CASE gs_account-shkzg.
+      WHEN 'H'.
+        gs_account-dmbtr *= -1.
+
+        MODIFY gt_account FROM gs_account INDEX lv_tabix
+        TRANSPORTING dmbtr.
+
+    ENDCASE.
+
+  ENDLOOP.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

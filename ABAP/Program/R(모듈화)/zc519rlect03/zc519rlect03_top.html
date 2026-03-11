@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519RLECT03_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519RLECT03_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519RLECT03_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519RLECT03_TOP</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zc519rlect03 MESSAGE-ID zc519m.
+
+TABLES : mara.
+
+DATA : BEGIN OF gt_mat OCCURS 0,
+         matnr TYPE mara-matnr,
+         mtart TYPE mara-mtart,
+         matkl TYPE mara-matkl,
+         werks TYPE marc-werks,
+         dispo TYPE marc-dispo,
+         ekgrp TYPE marc-ekgrp,
+       END OF gt_mat,
+
+       BEGIN OF gt_out OCCURS 0,
+         matnr TYPE mara-matnr,
+         maktx TYPE makt-maktx,
+         matkl TYPE mara-matkl,
+         wgbez TYPE t023t-wgbez,
+         dispo TYPE marc-dispo,
+         dsnam TYPE t024d-dsnam,
+         ekgrp TYPE marc-ekgrp,
+         eknam TYPE t024-eknam,
+       END OF gt_out,
+
+       gs_makt  TYPE makt,
+       gt_makt  LIKE TABLE OF gs_makt,
+       gs_t023t TYPE t023t,
+       gt_t023t LIKE TABLE OF gs_t023t,
+       gs_t024d TYPE t024d,
+       gt_t024d LIKE TABLE OF gs_t024d,
+       gs_t024  TYPE t024,
+       gt_t024  LIKE TABLE OF gs_t024.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

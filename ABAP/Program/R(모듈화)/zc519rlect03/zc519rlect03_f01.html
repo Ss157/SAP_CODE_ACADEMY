@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519RLECT03_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519RLECT03_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519RLECT03_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519RLECT03_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init .
+
+  pa_werks = '0001'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_mat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_mat .
+
+  REFRESH : gt_mat.
+
+  SELECT a~matnr a~mtart a~matkl
+         b~werks b~dispo b~ekgrp
+    INTO CORRESPONDING FIELDS OF TABLE gt_mat
+    FROM mara      AS a
+   INNER JOIN marc AS b
+      ON a~matnr = b~matnr
+   WHERE a~matnr IN so_matnr
+     AND b~werks  = pa_werks.
+
+  IF sy-subrc &lt;&gt; 0.
+    MESSAGE s001.
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_text .
+
+  CLEAR   : gs_makt, gs_t023t, gs_t024d, gs_t024.
+  REFRESH : gt_makt, gt_t023t, gt_t024d, gt_t024.
+
+  SELECT matnr maktx
+    INTO CORRESPONDING FIELDS OF TABLE gt_makt
+    FROM makt
+   WHERE matnr IN so_matnr
+     AND spras = sy-langu.
+
+  SELECT matkl wgbez
+    INTO CORRESPONDING FIELDS OF TABLE gt_t023t
+    FROM t023t
+   WHERE spras = sy-langu.
+
+  SELECT dispo dsnam
+    INTO CORRESPONDING FIELDS OF TABLE gt_t024d
+    FROM t024d
+   WHERE werks = pa_werks.
+
+  SELECT ekgrp eknam
+    INTO CORRESPONDING FIELDS OF TABLE gt_t024
+    FROM t024.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_out</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_out .
+
+  SORT gt_makt  BY matnr.
+  SORT gt_t023t BY matkl.
+  SORT gt_t024d BY dispo.
+  SORT gt_t024  BY ekgrp.
+
+  LOOP AT gt_mat.
+
+    MOVE-CORRESPONDING gt_mat TO gt_out.
+
+    READ TABLE gt_makt INTO gs_makt WITH KEY matnr = gt_out-matnr
+                                    BINARY SEARCH.
+
+    IF sy-subrc = 0.
+      gt_out-maktx = gs_makt-maktx.
+    ENDIF.
+
+    READ TABLE gt_t023t INTO gs_t023t WITH KEY matkl = gt_out-matkl
+                                      BINARY SEARCH.
+
+    IF sy-subrc = 0.
+      gt_out-wgbez = gs_t023t-wgbez.
+    ENDIF.
+
+    READ TABLE gt_t024d INTO gs_t024d WITH KEY dispo = gt_out-dispo
+                                      BINARY SEARCH.
+
+    IF sy-subrc = 0.
+      gt_out-dsnam = gs_t024d-dsnam.
+    ENDIF.
+
+    READ TABLE gt_t024 INTO gs_t024 WITH KEY ekgrp = gt_out-ekgrp
+                                      BINARY SEARCH.
+
+    IF sy-subrc = 0.
+      gt_out-eknam = gs_t024-eknam.
+    ENDIF.
+
+    APPEND gt_out.
+    CLEAR  gt_out.
+
+  ENDLOOP.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
