@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519RLECT05_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519RLECT05_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519RLECT05_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519RLECT05_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form modify_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM modify_screen .
+
+  LOOP AT SCREEN.
+
+<font color ="#0000FF">*    CASE screen-name.</font>
+<font color ="#0000FF">*      WHEN 'SO_MATNR-LOW'.</font>
+<font color ="#0000FF">*        screen-input = 0.</font>
+<font color ="#0000FF">*        MODIFY SCREEN.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*      WHEN 'PA_MATKL'.</font>
+<font color ="#0000FF">*        screen-active = 0.</font>
+<font color ="#0000FF">*        MODIFY SCREEN.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    ENDCASE.</font>
+
+<font color ="#0000FF">* modif id는 그룹 1에 들어간다.</font>
+<font color ="#0000FF">*    CASE screen-group1.</font>
+<font color ="#0000FF">*      WHEN 'GP1'.</font>
+<font color ="#0000FF">*        screen-active = 0.</font>
+<font color ="#0000FF">*        MODIFY SCREEN.</font>
+<font color ="#0000FF">*      WHEN 'GP2'.</font>
+<font color ="#0000FF">*        screen-input = 0.</font>
+<font color ="#0000FF">*        MODIFY SCREEN.</font>
+
+<font color ="#0000FF">*    CASE 'X'.</font>
+<font color ="#0000FF">*      WHEN pa_rb1.</font>
+<font color ="#0000FF">*        CASE screen-group1.</font>
+<font color ="#0000FF">*          WHEN 'GP2'.</font>
+<font color ="#0000FF">*            screen-active = 0.</font>
+<font color ="#0000FF">*            MODIFY SCREEN.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*        ENDCASE.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*      WHEN pa_rb2.</font>
+<font color ="#0000FF">*        CASE screen-group1.</font>
+<font color ="#0000FF">*          WHEN 'GP1'.</font>
+<font color ="#0000FF">*            screen-active = 0.</font>
+<font color ="#0000FF">*            MODIFY SCREEN.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*        ENDCASE.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    ENDCASE.</font>
+
+    CASE screen-name.
+      WHEN 'PA_PBDNR' OR 'PA_VERSB'.
+        screen-input = 0.
+        MODIFY SCREEN.
+
+    ENDCASE.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init .
+
+  pa_werks = pa_berid = '1010'.
+  pa_versb = '00'.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

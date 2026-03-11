@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZC519RLECT05_S01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZC519RLECT05_S01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZC519RLECT05_S01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZC519RLECT05_S01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE TEXT-t01.
+
+<font color ="#0000FF">*  SELECT-OPTIONS : so_matnr FOR mara-matnr MODIF ID gp2,</font>
+<font color ="#0000FF">*                   so_mtart FOR mara-mtart MODIF ID gp1.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  PARAMETERS     : pa_matkl TYPE mara-matkl MODIF ID gp1. "group 1</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  SELECTION-SCREEN ULINE.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  PARAMETERS     : pa_rb1 RADIOBUTTON GROUP rb1 DEFAULT 'X' USER-COMMAND mdf, "modify</font>
+<font color ="#0000FF">*                   pa_rb2 RADIOBUTTON GROUP rb1.</font>
+
+  PARAMETERS : pa_werks TYPE mkal-werks,
+               pa_berid TYPE pbid-berid,
+               pa_pbdnr TYPE pbid-pbdnr,
+               pa_versb TYPE pbid-versb.
+
+SELECTION-SCREEN END OF BLOCK bl1.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
