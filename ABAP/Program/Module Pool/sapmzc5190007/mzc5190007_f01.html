@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MZC5190007_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MZC5190007_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include MZC5190007_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          MZC5190007_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form posting</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM posting .
+
+  DATA : lv_wrbtr_s(50),
+         lv_wrbtr_h(50),
+         lv_msg(100).
+
+  CLEAR   : gs_bdcdata, gs_messtab, gs_param, lv_msg.
+  REFRESH : gt_bdcdata, gt_messtab.
+
+<font color ="#0000FF">* Option 설정</font>
+  gs_param-dismode = 'N'. "A N E
+  gs_param-nobinpt = 'X'.
+  gs_param-updmode = 'S'.
+
+  CLEAR : lv_wrbtr_s, lv_wrbtr_h.
+
+<font color ="#0000FF">* 만약 QUAN이 있다면 CURRENCY 대신에 UNIT을 쓰기</font>
+  WRITE gs_posting-s_wrbtr TO lv_wrbtr_s CURRENCY gs_posting-waers.
+  WRITE gs_posting-h_wrbtr TO lv_wrbtr_h CURRENCY gs_posting-waers.
+
+  CONDENSE lv_wrbtr_s NO-GAPS.
+  CONDENSE lv_wrbtr_h NO-GAPS.
+
+  PERFORM make_bdcdate USING : 'X'    'SAPMF05A'    '0100',
+                               ' '    'BDC_OKCODE'  '/00',
+                               ' '    'BKPF-BLDAT'  sy-datum,
+                               ' '    'BKPF-BLART'  gs_posting-blart,
+                               ' '    'BKPF-BUKRS'  gs_posting-bukrs,
+                               ' '    'BKPF-WAERS'  gs_posting-waers,
+                               ' '    'RF05A-NEWBS' gs_posting-s_bschl,
+                               ' '    'RF05A-NEWKO' gs_posting-s_hkont,
+
+                               'X'    'SAPMF05A'    '0300',
+                               ' '    'BDC_OKCODE'  '/00',
+                               ' '    'BSEG-WRBTR'  lv_wrbtr_s,
+                               ' '    'RF05A-NEWBS' gs_posting-h_bschl,
+                               ' '    'RF05A-NEWKO' gs_posting-h_hkont,
+
+                               'X'    'SAPMF05A'    '0300',
+                               ' '    'BDC_OKCODE'  '=BU',
+                               ' '    'BSEG-WRBTR'  lv_wrbtr_h.
+
+  CALL TRANSACTION 'FB01' USING         gt_bdcdata " 인터널 테이블 주기
+                          OPTIONS FROM  gs_param   " option 주기
+                          MESSAGES INTO gt_messtab." 메세지 받기
+
+<font color ="#0000FF">* READ TABLE gt_messtab INTO gs_messtab WITH KEY msgtyp = 'E'.</font>
+<font color ="#0000FF">* 만약 subrc = 0 이면 실패했다는 뜻임.</font>
+
+  READ TABLE gt_messtab INTO gs_messtab WITH KEY msgid = 'F5'
+                                                 msgnr = '312'.
+
+  IF sy-subrc = 0. " 성공했다면 아래 로직 수행.
+
+    CALL FUNCTION 'MESSAGE_TEXT_BUILD'
+      EXPORTING
+        msgid               = gs_messtab-msgid       " Message ID
+        msgnr               = gs_messtab-msgnr       " Number of message
+        msgv1               = gs_messtab-msgv1       " Parameter 1
+        msgv2               = gs_messtab-msgv2       " Parameter 2
+        msgv3               = gs_messtab-msgv3       " Parameter 3
+        msgv4               = gs_messtab-msgv4       " Parameter 4
+      IMPORTING
+        message_text_output = lv_msg.                " Output message text
+
+    CONDENSE lv_msg.
+
+    MESSAGE s000 WITH lv_msg.
+
+  ELSE.
+
+    MESSAGE s000 WITH 'Posting failed' DISPLAY LIKE 'E'.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_bdcdate</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_bdcdate  USING pv_begin pv_fnam pv_fval.
+
+  CASE pv_begin.
+    WHEN 'X'.
+      gs_bdcdata-dynbegin = pv_begin.
+      gs_bdcdata-program  = pv_fnam.
+      gs_bdcdata-dynpro   = pv_fval.
+
+    WHEN OTHERS.
+      gs_bdcdata-fnam = pv_fnam.
+      gs_bdcdata-fval = pv_fval.
+
+  ENDCASE.
+
+  APPEND gs_bdcdata TO gt_bdcdata.
+  CLEAR  gs_bdcdata.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

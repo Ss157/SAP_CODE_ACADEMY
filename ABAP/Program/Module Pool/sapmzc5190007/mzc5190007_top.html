@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>MZC5190007_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: MZC5190007_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include MZC5190007_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include MZC5190007_TOP                           - Module Pool      SAPMZC5190007</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+PROGRAM sapmzc5190007 MESSAGE-ID zc519m.
+
+DATA : BEGIN OF gs_posting,
+         blart   TYPE bkpf-blart, " 전표유형
+         bukrs   TYPE bkpf-bukrs, " 회사코드
+         waers   TYPE bkpf-waers, " 통화키
+         s_bschl TYPE bseg-bschl, " 전기키-차변
+         h_bschl TYPE bseg-bschl, " 전기키-대변
+         s_hkont TYPE bseg-hkont, " 계정-차변
+         h_hkont TYPE bseg-hkont, " 계정-대변
+         s_wrbtr TYPE bseg-wrbtr, " 금액-차변
+         h_wrbtr TYPE bseg-wrbtr, " 금액-대변
+       END OF gs_posting,
+
+       gv_okcode  TYPE sy-ucomm,
+
+<font color ="#0000FF">* BDC 관련</font>
+       gs_bdcdata TYPE bdcdata,
+       gt_bdcdata LIKE TABLE OF gs_bdcdata,
+       gs_messtab TYPE bdcmsgcoll,
+       gt_messtab LIKE TABLE OF gs_messtab,
+       gs_param   TYPE ctu_params.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

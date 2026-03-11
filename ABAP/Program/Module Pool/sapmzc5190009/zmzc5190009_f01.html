@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZMZC5190009_F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZMZC5190009_F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZMZC5190009_F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZMZC5190009_F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_fcat_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_fcat_layout .
+
+  gs_layout-zebra      = 'X'.
+  gs_layout-cwidth_opt = 'A'.
+  gs_layout-sel_mode   = 'D'.
+
+  gs_stable-row = 'X'.
+  gs_stable-col = 'X'.
+
+  PERFORM make_fcat USING :
+  'X'  'GROUP_ID'       ' '  'ZC519CDS0015'  'GROUPID',
+  'X'  'MEMBER_ID'      ' '  'ZC519CDS0015'  'MEMBERID',
+  ' '  'MEMBER_NAME'    ' '  'ZC519CDS0015'  'MEMBERNAME',
+  ' '  'MEMBER_GENDER'  ' '  'ZC519CDS0015'  'MEMBERGENDER',
+  ' '  'MEMBER_ADDR'    ' '  'ZC519CDS0015'  'MEMBERADDR',
+  ' '  'MEMBER_PHONE'   ' '  'ZC519CDS0015'  'MEMBERPHONE'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_fcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_fcat  USING pv_key
+                      pv_field
+                      pv_text
+                      pv_ref_table
+                      pv_ref_field.
+
+  gs_fcat = VALUE #(
+                      key       = pv_key
+                      fieldname = pv_field
+                      coltext   = pv_text
+                      ref_table = pv_ref_table
+                      ref_field = pv_ref_field
+                   ).
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR  gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_alv</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_alv .
+
+  CREATE OBJECT gcl_container
+    EXPORTING
+      container_name = 'GCL_CONTAINER'.
+
+  CREATE OBJECT gcl_grid
+    EXPORTING
+      i_parent = gcl_container.
+
+  gs_variant-report = sy-repid.
+
+  CALL METHOD gcl_grid-&gt;set_table_for_first_display
+    EXPORTING
+      is_variant      = gs_variant
+      i_save          = 'A'
+      i_default       = 'X'
+      is_layout       = gs_layout
+    CHANGING
+      it_outtab       = gt_idol
+      it_fieldcatalog = gt_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_grid</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_grid .
+
+  CALL METHOD gcl_grid-&gt;refresh_table_display
+    EXPORTING
+      is_stable = gs_stable.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_idol</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_idol .
+
+  _clear gs_idol gt_idol.
+
+  SELECT groupid    AS group_id,    memberid     AS member_id,
+         membername AS member_name, membergender AS member_gender,
+         memberaddr AS member_addr, memberphone  AS member_phone,
+         erdat,        erzet,      ernam,
+         aedat,        aezet,      aenam
+    INTO CORRESPONDING FIELDS OF TABLE @gt_idol
+    FROM ZC519cds0015.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_data .
+
+  DATA : lv_cnt TYPE i.
+
+  CLEAR  lv_cnt.
+  _clear gs_row gt_row.
+
+  CALL METHOD gcl_grid-&gt;get_selected_rows
+    IMPORTING
+      et_index_rows = gt_row.
+
+  IF gt_row IS INITIAL.
+
+    MESSAGE s000 WITH 'First, select row' DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  lv_cnt = lines( gt_row ).
+
+  IF lv_cnt &gt; 1.
+
+    MESSAGE s000 WITH 'Select only one row' DISPLAY LIKE 'E'.
+    EXIT.
+
+  ENDIF.
+
+  READ TABLE gt_row INTO gs_row INDEX 1.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ENDIF.
+
+  READ TABLE gt_idol INTO gs_idol INDEX gs_row-index.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form clear_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM clear_data .
+
+  CLEAR gs_idol.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form save_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM save_data .
+
+  DATA : ls_save TYPE zc519t0030.
+
+  IF gs_idol-group_id  IS INITIAL OR
+     gs_idol-member_id IS INITIAL.
+
+    MESSAGE s000 WITH 'Group ID, Member ID is required'.
+    EXIT.
+
+  ENDIF.
+
+  MOVE-CORRESPONDING gs_idol TO ls_save.
+
+  IF gs_idol-erdat IS INITIAL.
+
+    gs_idol-erdat = sy-datum.
+    gs_idol-erzet = sy-uzeit.
+    gs_idol-ernam = sy-uname.
+
+  ELSE.
+
+    gs_idol-aedat = sy-datum.
+    gs_idol-aezet = sy-uzeit.
+    gs_idol-aenam = sy-uname.
+
+  ENDIF.
+
+  MODIFY ZC519t0030 FROM ls_save.
+
+  IF sy-dbcnt &gt; 0.
+
+    COMMIT WORK AND WAIT.
+
+    PERFORM get_idol.
+    PERFORM refresh_grid.
+
+    MESSAGE s002.
+
+  ELSE.
+
+    ROLLBACK WORK.
+    MESSAGE s004 DISPLAY LIKE 'E'.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form delete_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM delete_data .
+
+  DATA : lcl_statement TYPE REF TO cl_sql_statement,
+         lv_sql        TYPE string,
+         lx_sql_except TYPE REF TO cx_root,
+         lv_msg        TYPE string.
+
+  IF gs_idol-group_id  IS INITIAL OR
+     gs_idol-member_id IS INITIAL.
+
+    MESSAGE s000 WITH 'Group ID, Member ID is required'.
+    EXIT.
+
+  ENDIF.
+
+  TRY.
+<font color ="#0000FF">* DB Connection 연결정보 얻기</font>
+      DATA(lcl_connection) = cl_sql_connection=&gt;get_connection( ). "Default Connection 얻기
+
+<font color ="#0000FF">* SQL 을 실행할 객체에 Connection 전달</font>
+      CREATE OBJECT lcl_statement
+        EXPORTING
+          con_ref = lcl_connection. " Database Connection
+
+<font color ="#0000FF">* 실행할 SQL 구문 작성</font>
+      lv_sql = | DELETE FROM ZC519T0030                    | &&
+               | WHERE GROUP_ID  = '{ gs_idol-group_id }'  | &&
+               |   AND MEMBER_ID = '{ gs_idol-member_id }' | .
+
+      lcl_statement-&gt;execute_update( lv_sql ).
+
+      lcl_connection-&gt;commit( ).
+      lcl_connection-&gt;close( ).
+
+      PERFORM get_idol.
+      PERFORM refresh_grid.
+
+      MESSAGE s003.
+
+    CATCH cx_sql_exception INTO lx_sql_except.
+
+<font color ="#0000FF">* 에러 메시지 받기</font>
+      lv_msg = lx_sql_except-&gt;get_text( ).
+      lcl_connection-&gt;rollback( ).
+      lcl_connection-&gt;close( ).
+
+      " 위에서 에러 뜨면
+      " 바로 catch문으로 오기 때문에 close 한 번 더 함.
+
+      MESSAGE s000 WITH lv_msg DISPLAY LIKE 'E'.
+      EXIT.
+
+  ENDTRY.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>

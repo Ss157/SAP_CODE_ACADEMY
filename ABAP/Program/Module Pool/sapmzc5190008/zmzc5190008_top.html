@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZMZC5190008_TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZMZC5190008_TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZMZC5190008_TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZMZC5190008_TOP                          - Module Pool      SAPMZC5190008</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+PROGRAM sapmzc5190008 MESSAGE-ID zc519m.
+
+DATA : gs_custom  TYPE scustom,
+
+       gv_okcode  TYPE sy-ucomm,
+
+<font color ="#0000FF">* BDC 관련</font>
+       gs_bdcdata TYPE bdcdata,
+       gt_bdcdata LIKE TABLE OF gs_bdcdata, " shdb record 값 저장.
+       gs_messtab TYPE bdcmsgcoll,
+       gt_messtab LIKE TABLE OF gs_messtab, " 결과 메세지 저장.
+       gs_param   TYPE ctu_params.          " BDC 옵션 설정.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
+</font>
+</body>
+</html>
